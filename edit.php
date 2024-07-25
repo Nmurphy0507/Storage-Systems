@@ -58,15 +58,13 @@
     <title>PHP Keysorting App</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./src/homepage.css">
 </head>
-<body>
-    <nav class="navbar navbar-light justify-content-center fs-3 mb-5" style="background-color: #ff0000">
-        Residence Hall Keys
-    </nav>
 
+<body>
     <div class="container">
-        <div class="text-center mb-4">
-            <h3>Edit User Information</h3>
+        <div class="text-center mt-5 mb-4">
+            <h3>Edit Resident Information</h3>
             <p class="text-muted">Click update after changing any information</p>
         </div>
 
