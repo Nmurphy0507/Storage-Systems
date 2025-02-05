@@ -1,6 +1,6 @@
-<?php 
+<?php
 
-$is_invalid = false; 
+$is_invalid = false;
 
 if($_SERVER["REQUEST_METHOD"] === "POST"){
     
@@ -25,7 +25,7 @@ if($_SERVER["REQUEST_METHOD"] === "POST"){
 
                 $_SESSION["user_id"] = $user["id"];
 
-                header("Location: index.php");
+                header("Location: homepage.php");
                 exit;
             }
         }
@@ -44,7 +44,7 @@ if($_SERVER["REQUEST_METHOD"] === "POST"){
     <link rel="stylesheet" href="./src/main.css">
 </head>
 
-<body> 
+<body>
     <div class="container">
         <form class="form" id="loginForm" method="POST" action="login.php">
             <h1 class="form__title">Login</h1>
@@ -66,8 +66,8 @@ if($_SERVER["REQUEST_METHOD"] === "POST"){
             <p class="form__text">
                 <a class="form__link" href="index.html" id="createAccount">Don't have an account? Create Account</a>
             </p>
-        </form>        
+        </form>
     </div>
     <script src="./src/main.js"></script>
-</body>  
+</body>
 </html>

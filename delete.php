@@ -10,7 +10,7 @@
         mysqli_stmt_execute($stmt);
 
         if(mysqli_stmt_affected_rows($stmt) > 0) {
-            header("Location: index.php?msg=Record deleted successfully");
+            header("Location: homepage.php?msg=Record deleted successfully");
             exit();
         } else {
             echo "Failed to delete record.";

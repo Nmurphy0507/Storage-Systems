@@ -1,0 +1,101 @@
+img {
+  max-width: 100%;
+  height: 115px;
+  -ms-interpolation-mode: bicubic;
+  padding: 0.5%;
+  align-items: right;
+}
+
+body {
+  background: url(red-main.jpg) no-repeat fixed center;
+  background-size: cover;
+  background-color: #a90b00;
+}
+
+.highlight {
+  background-color: yellow;
+  font-weight: bold;
+}
+
+.topnavbar{
+  margin-bottom: 8px;
+
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    background-color: #333;
+  }
+
+  li {
+    float: left;
+    padding: 0;
+    margin: 0;
+  }
+
+  li a, .dropbtn {
+    display: inline-block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+  }
+
+  li a:hover, .dropdown:hover .dropbtn {
+    background-color: red;
+  }
+
+  li.dropdown {
+    display: inline-block;
+    position: relative; /* Make sure the dropdown is positioned relative to this element */
+  }
+
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%; /* Position the dropdown right below the button */
+    left: 0;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 9999 !important; /* High z-index to ensure it stays above other elements */
+  }
+
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+  }
+
+  .dropdown-content a:hover {
+    background-color: #f1f1f1;
+  }
+
+  /* Make dropdown visible when hovering */
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+
+  li.style-right {
+    float: right;
+  }
+}
+
+.column.middle {
+  margin: auto;
+  text-align: center;
+  width: 95%;
+}
+
+@media screen and (max-width: 600px) {
+  .column {
+    width: 100%;
+  }
+}
+
+.footer {
+  text-align: center;
+  padding: 75px;
+}

@@ -9,22 +9,22 @@
         $room = $_POST['room'];
         $key_number = $_POST['key_number'];
         $floor = $_POST['floor'];
-        $barcode = $_POST['barcode'];
+        $mealcard = $_POST['mealcard'];
         $checkin_signature = $_POST['checkin_signature'];
         $key_check = $_POST['key_check'];
         $Date = $_POST['Date'];
-        if(empty($first_name) || empty($last_name) || empty($building) || empty($room) || empty($key_number) || empty($floor) || empty($barcode) || empty($checkin_signature) || empty($key_check) || empty($Date)) {
+        if(empty($first_name) || empty($last_name) || empty($building) || empty($room) || empty($key_number) || empty($floor) || empty($mealcard) || empty($checkin_signature) || empty($key_check) || empty($Date)) {
             echo "<script>alert('Please fill in all fields before saving.')</script>";
         } else {
             $Checked_in_out = ($key_check == 'Checked In') ? 'Checked In' : 'Checked Out';
 
-            $sql = "INSERT INTO `checkin-out` (first_name, last_name, building, room, floor, barcode, key_number, checkin_signature, Checked_in_out, Date) 
-                    VALUES ('$first_name', '$last_name', '$building', '$room', '$floor', '$barcode', '$key_number', '$checkin_signature', '$Checked_in_out', '$Date')";
+            $sql = "INSERT INTO `checkin-out` (first_name, last_name, building, room, floor, mealcard, key_number, checkin_signature, Checked_in_out, Date) 
+                    VALUES ('$first_name', '$last_name', '$building', '$room', '$floor', '$mealcard', '$key_number', '$checkin_signature', '$Checked_in_out', '$Date')";
 
             $result = mysqli_query($conn, $sql);
 
             if($result) {
-                header("Location: index.php?msg=New record created successfully");
+                header("Location: homepage.php?msg=New record created successfully");
                 exit();
             } else {
                 echo "Error: " . mysqli_error($conn); 
@@ -104,8 +104,8 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="barcode" class="form-label">Barcode:</label>
-                    <input type="text" id="barcode" class="form-control" name="barcode" placeholder="Barcode #">
+                    <label for="mealcard" class="form-label">Mealcard:</label>
+                    <input type="text" id="mealcard" class="form-control" name="mealcard" placeholder="Mealcard #">
                 </div>
 
                 <div class="mb-3">
@@ -132,7 +132,7 @@
 
                 <div class="mt-3">
                     <button type="submit" class="btn btn-success" name="submit">Save</button>
-                    <a href="index.php" class="btn btn-danger">Cancel</a>
+                    <a href="homepage.php" class="btn btn-danger">Cancel</a>
                 </div>
 
             </form>
@@ -149,12 +149,12 @@
             var room = document.getElementById("room").value.trim();
             var keyNumber = document.getElementById("key_number").value.trim();
             var floor = document.getElementById("floor").value.trim();
-            var barcode = document.getElementById("barcode").value.trim();
+            var mealcard = document.getElementById("mealcard").value.trim();
             var signature = document.querySelector("input[name=checkin_signature]").value.trim();
             var keyChecked = document.querySelector("input[name=key_check]:checked");
             var Date = document.getElementById("Date").value.trim();
 
-            if(firstName === "" || lastName === "" || building === "" || room === "" || keyNumber === "" || floor === "" || barcode === "" || signature === "" || keyChecked === null || Date === "") {
+            if(firstName === "" || lastName === "" || building === "" || room === "" || keyNumber === "" || floor === "" || mealcard === "" || signature === "" || keyChecked === null || Date === "") {
                 alert("Please fill in all fields before saving.");
                 return false;
             }
