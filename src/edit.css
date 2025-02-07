@@ -5,3 +5,9 @@ body{
     background-attachment: fixed;
     background-size: cover;
 }
+
+.delete-button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}

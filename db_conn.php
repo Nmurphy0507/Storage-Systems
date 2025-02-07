@@ -1,6 +1,6 @@
-<?php 
+<?php
 
-    $severname = "localhost";
+    $servername = "localhost";
     $username = "root";
     $password = "";
     $dbname = "Dormroom_Keys";
@@ -11,5 +11,5 @@
         die ("Connection failed " . mysqli_connect_error());
     }
 
-     // echo("Connect Successfully!");
+    // echo("Connect Successfully!");
 ?>

@@ -4,39 +4,51 @@ session_start();
 if (isset($_SESSION["user_id"])) {
     $mysqli = require __DIR__ . "/database.php";
 
-    $sql = "SELECT * FROM user WHERE id = {$_SESSION["user_id"]}";
-    $result = $mysqli->query($sql);
+    $stmt = $mysqli->prepare("SELECT * FROM user WHERE id = ?");
+    $stmt->bind_param("i", $_SESSION['user_id']);
+    $stmt->execute();
+    $result = $stmt->get_result();
     $user = $result->fetch_assoc();
 }
 
 include "db_conn.php";
 
-$search = "";
+// Query to count the total number of checked-in keys across all buildings
+$query_total = "SELECT COUNT(*) as total_checked_in
+                FROM `Checkin-out`
+                WHERE Checked_in_out = 'Checked in'";
+$result_total = mysqli_query($conn, $query_total);
 
-if (isset($_GET['search'])) {
-    $search = mysqli_real_escape_string($conn, $_GET['search']);
-    $sql = "SELECT * FROM `checkin-out` WHERE 
-            first_name LIKE '%$search%' OR
-            last_name LIKE '%$search%' OR
-            building LIKE '%$search%' OR
-            room LIKE '%$search%' OR
-            key_number LIKE '%$search%' OR
-            floor LIKE '%$search%' OR
-            mealcard LIKE '%$search%' OR
-            checkin_signature LIKE '%$search%' OR
-            Checked_in_out LIKE '%$search%' OR
-            Date LIKE '%$search%'";
-} else {
-    $sql = "SELECT * FROM `checkin-out`";
+// Fetch the total count
+$row_total = mysqli_fetch_assoc($result_total);
+$total_checked_in = $row_total['total_checked_in'];
+
+// Query to count keys checked out per building
+$query = "SELECT building, COUNT(*) as total_checked_out
+          FROM `Checkin-out`
+          WHERE Checked_in_out = 'Checked in'
+          GROUP BY building";
+$result = mysqli_query($conn, $query);
+
+// Initialize an array to store the counts
+$building_counts = array();
+
+while ($row = mysqli_fetch_assoc($result)) {
+    $building_counts[$row['building']] = $row['total_checked_out'];
 }
 
-$result = mysqli_query($conn, $sql);
+// Query to count keys per group, excluding NULL and "Other"
+$query_groups = "SELECT `group`, COUNT(*) as total_per_group
+                 FROM `Checkin-out`
+                 WHERE `group` IS NOT NULL AND `group` != 'Other'
+                 GROUP BY `group`";
+$result_groups = mysqli_query($conn, $query_groups);
 
-function highlight_search_result($text, $search) {
-    if (!empty($search)) {
-        $text = preg_replace("/($search)/i", "<strong>$1</strong>", $text);
-    }
-    return $text;
+// Initialize an array to store the group counts
+$group_counts = array();
+
+while ($row_groups = mysqli_fetch_assoc($result_groups)) {
+    $group_counts[$row_groups['group']] = $row_groups['total_per_group'];
 }
 ?>
 
@@ -80,104 +92,193 @@ function highlight_search_result($text, $search) {
     width: 100%;
   }
 }
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 85%;
+  margin: auto;
+}
+
+td, th {
+  border: 1px solid rgb(40, 40, 40);
+  text-align: left;
+  padding: 10px;
+}
+
+th{
+    background-color: rgb(40, 40, 40);
+    color: white;
+}
+
+tr {
+  background-color:rgb(255, 255, 255);
+}
+
+h2{
+    text-align: center;
+}
 </style>
 </head>
 
 <body>
 <div class="header">
-        <img alt="Frostburg State University" style="transform: translate(20px,23px);" src="src/FSU-logo.png">
+    <div>
+     <a href="https://www.frostburg.edu/">
+        <img alt="Frostburg State University" style="transform: translate(20px,20px);" src="src/FSU-logo.png">
+        </a>
         <?php if (isset($user)): ?>
-        <h2 class="p-3 mt-3" style="float:right"> Welcome, <?= htmlspecialchars($user["name"])?> <a href="logout.php" class="dropbtn btn btn-danger"> Logout </a> </h2>
+        <h2 class="mt-2 mx-2" style="float:right"> Welcome, <?= htmlspecialchars($user["name"])?></h2>
         <?php endif; ?>
-</div>
-
-<div class="container">
-        <?php
-        if (isset($_GET['msg'])) {
-            $msg = $_GET['msg'];
-            echo
-            '<div class="alert alert-warning alert-dismissible fade show" role="alert">
-                '.$msg.'
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>';
-        }
-        ?>
+    </div>
+        
+    <div class="logout_button">
+        <a href="logout.php" class="dropbtn btn btn-danger"> Logout </a>
+    </div>
 </div>
 
 <div class="topnavbar">
     <ul>
-    <li><a href="home.php" class="btn btn-dark mx-1 mt-1">Home</a></li>
-        <li class="dropdown">
-        <a href="javascript:void(0)" class="dropbtn btn btn-dark mb-1 mx-0 mt-1">Checked In/Out</a>
-            <div class="dropdown-content">
-            <a href="homepage.php">All Keys</a>
-            <a href="Checkedin.php">Checked In</a>
-            <a href="Checkedout.php">Checked Out</a>
-            <a href="">Archived Keys</a>
-        </div>
-        </li>
-        <li class="dropdown">
-        <a href="javascript:void(0)" class="dropbtn btn btn-dark mb-1 mx-1 mt-1">Building</a>
-        <div class="dropdown-content">
-            <a href="">Allen</a>
-            <a href="">Annapolis</a>
-            <a href="">Cumberland</a>
-            <a href="">Diehl</a>
-            <a href="">Frederick</a>
-            <a href="">Frost</a>
-            <a href="">Gray</a>
-            <a href="">Simpson</a>
-            <a href="">Sowers</a>
-            <a href="">Westminster</a>
-        </div>
-        </li>
-        <li><a href="homepage.php" class="btn btn-dark mt-1">Status</a></li>
-        <li><a href="homepage.php" class="btn btn-dark mx-1 mt-1">Upcoming</a></li>
-        <li style="float:right"><a href="add_new.php" class="btn btn-dark mb-2 mx-1 mt-1"> Add New </a></li>
-        <li style="float:right"><a href="" class="btn btn-dark mb-1 mt-1"> Insert Dataset </a></li>
-        
-        <form class="p-4" method="get">
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search..." id="searchInput" name="search" value="<?= htmlspecialchars($search) ?>">
-                <button type="submit" class="btn btn-secondary"><i class="fa-solid fa-search"></i></button>
-                <?php if (!empty($search)): ?>
-                    <a href="<?= $_SERVER['PHP_SELF'] ?>" class="btn btn-danger ms-2"> Clear Search </a>
-                <?php endif; ?>
-            </div>
-        </form>
+        <li><a href="home.php" class="btn btn-dark mx-2 mt-2 mb-2">Home</a></li>
+        <li><a href="homepage.php" class="dropbtn btn btn-dark mx-2 mt-2 mb-2">Residence</a></li>
+        <li><a href="linen.php" class="dropbtn btn btn-dark mx-2 mt-2 mb-2">Linen Rentals</a></li>
+        <li><a href="Archives.php" class="btn btn-dark mx-2 mt-2 mb-2">Archives</a></li>
     </ul>
+    
+    <form class="" method="get">
+      <div class="input-group"></div>
+    </form>
 </div>
 
 <div class="row">
-<div class="column">
-    <h2>Total numbers of Keys checked out per building</h2>
-    <ul>
-        <li>Allen -</li>
-        <li>Annapolis - </li>
-        <li>Cumberland-  </li>
-        <li>Diehl - </li>
-        <li>Frederick - </li>
-        <li>Frost - </li>
-        <li>Gray - </li>
-        <li>Simpson - </li>
-        <li>Sowers - </li>
-        <li>Westminster - </li>
-    </ul>
-</div>
-  
-<div class="column">
-    <h2>Upcoming Events</h2>
-    <p></p>
-</div>
-  
-<div class="column">
-    <h2>Column</h2>
-    <p></p>
-</div>
-</div>
+
+    <div class="column" style="overflow-x:auto;">
+        <h2>Total Number of Keys Out - <?= isset($total_checked_in) ? $total_checked_in : 0; ?></h2>
+        <h2> Upcoming Camp Calender</h2>
+    </div>
+
+    <div class="column" style="overflow-x:auto;">
+        <h2>Building Residence</h2>
+        <table>
+            <tr>
+                <th>Building</th>
+                <th>Checked in Residence</th>
+            </tr>
+            <!-- Display for each building -->
+            <tr>
+                <td>Allen</td>
+                <td><?= isset($building_counts['Allen']) ? $building_counts['Allen'] : 0; ?></td>
+            </tr>
+            <tr>
+                <td>Annapolis</td>
+                <td><?= isset($building_counts['Annapolis']) ? $building_counts['Annapolis'] : 0; ?></td>
+            </tr>
+            <tr>
+                <td>Cumberland</td>
+                <td><?= isset($building_counts['Cumberland']) ? $building_counts['Cumberland'] : 0; ?></td>
+            </tr>
+            <tr>
+              <td>Diehl</td>
+              <td><?= isset($building_counts['Diehl']) ? $building_counts['Diehl'] : 0; ?></td>
+            </tr>
+            <tr>
+              <td>Frederick</td>
+              <td><?= isset($building_counts['Frederick']) ? $building_counts['Frederick'] : 0; ?></td>
+            </tr>
+            <tr>
+              <td>Frost</td>
+              <td><?= isset($building_counts['Frost']) ? $building_counts['Frost'] : 0; ?></td>
+            </tr>
+            <tr>
+              <td>Gray</td>
+              <td><?= isset($building_counts['Gray']) ? $building_counts['Gray'] : 0; ?></td>
+            </tr>
+            <tr>
+              <td>Simpson</td>
+              <td><?= isset($building_counts['Simpson']) ? $building_counts['Simpson'] : 0; ?></td>
+            </tr>
+            <tr>
+              <td>Sowers</td>
+              <td><?= isset($building_counts['Sowers']) ? $building_counts['Sowers'] : 0; ?></td>
+            </tr>
+            <tr>
+              <td>Westminster</td>
+              <td><?= isset($building_counts['Westminster']) ? $building_counts['Westminster'] : 0; ?></td>
+            </tr>
+        </table>
+      </div>
+
+    <div class="column" style="overflow-x:auto;">
+        <h2>Groups</h2>
+        <table>
+          <tr>
+            <th>Groups</th>
+            <th>Residence Per Group</th>
+          </tr>
+          <tr>
+            <td>MD All-State</td>
+            <td><?= isset($group_counts['MD All-State']) ? $group_counts['MD All-State'] : 0; ?></td>
+          </tr>
+          <tr>
+            <td>Arlington Soccer</td>
+            <td><?= isset($group_counts['Arlington Soccer']) ? $group_counts['Arlington Soccer'] : 0; ?></td>
+          </tr>
+          <tr>
+            <td>Brit-AM</td>
+            <td><?= isset($group_counts['Brit-AM']) ? $group_counts['Brit-AM'] : 0; ?></td>
+          </tr>
+          <tr>
+            <td>Camp Hope</td>
+            <td><?= isset($group_counts['Camp Hope']) ? $group_counts['Camp Hope'] : 0; ?></td>
+          </tr>
+          <tr>
+            <td>LUC Staff</td>
+            <td><?= isset($group_counts['LUC Staff']) ? $group_counts['LUC Staff'] : 0; ?></td>
+          </tr>
+          <tr>
+            <td>Res Life Staff</td>
+            <td><?= isset($group_counts['Res Life Staff']) ? $group_counts['Res Life Staff'] : 0; ?></td>
+          </tr>
+          <tr>
+            <td>FSY Week 1</td>
+            <td><?= isset($group_counts['FSY Week 1']) ? $group_counts['FSY Week 1'] : 0; ?></td>
+          </tr>
+          <tr>
+            <td>FSY Week 2</td>
+            <td><?= isset($group_counts['FSY Week 2']) ? $group_counts['FSY Week 2'] : 0; ?></td>
+          </tr>
+          <tr>
+            <td>FSY Week 3</td>
+            <td><?= isset($group_counts['FSY Week 3']) ? $group_counts['FSY Week 3'] : 0; ?></td>
+          </tr>
+          <tr>
+            <td>Wooten Session 1</td>
+            <td><?= isset($group_counts['Wooten Session 1']) ? $group_counts['Wooten Session 1'] : 0; ?></td>
+          </tr>
+          <tr>
+            <td>Wooten Session 2</td>
+            <td><?= isset($group_counts['Wooten Session 12']) ? $group_counts['Wooten Session 2'] : 0; ?></td>
+          </tr>
+          <tr>
+            <td>Wooten Session 3</td>
+            <td><?= isset($group_counts['Wooten Session 3']) ? $group_counts['Wooten Session 3'] : 0; ?></td>
+          </tr>
+          <tr>
+            <td>Wooten Session 4</td>
+            <td><?= isset($group_counts['Wooten Session 4']) ? $group_counts['Wooten Session 4'] : 0; ?></td>
+          </tr>
+          <tr>
+            <td>Wooten Session 5</td>
+            <td><?= isset($group_counts['Wooten Session 5']) ? $group_counts['Wooten Session 5'] : 0; ?></td>
+          </tr>
+          <tr>
+            <td>Other</td>
+            <td><?= isset($group_counts['Other']) ? $group_counts['Other'] : 0; ?></td>
+          </tr>
+        </table>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybU5p2Uj1d1iz1pSA9Wdnlrp9bJhFsD7/TfZp7xYfuN0KSf4I" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0sG1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 
     <!-- Custom JS -->

@@ -1,15 +1,14 @@
-img {
-  max-width: 100%;
-  height: 115px;
-  -ms-interpolation-mode: bicubic;
-  padding: 0.5%;
-  align-items: right;
-}
-
 body {
-  background: url(red-main.jpg) no-repeat fixed center;
+  background: url(src/red-main.jpg) no-repeat fixed;
   background-size: cover;
   background-color: #a90b00;
+}
+
+.header{
+  background-color: #e6e6e6;
+  color: rgb(0, 0, 0);
+  padding: 8px;
+  text-align: justify end;
 }
 
 .highlight {
@@ -17,76 +16,172 @@ body {
   font-weight: bold;
 }
 
-.topnavbar{
-  margin-bottom: 8px;
+.topnavbar {
+  margin-bottom: 5px;
+  padding: 3px 0;
+  background-color: #333;
+}
 
-  ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    background-color: #333;
-  }
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  background-color: #333;
+}
 
-  li {
-    float: left;
-    padding: 0;
-    margin: 0;
-  }
+li {
+  float: left;
+  padding: 0;
+  margin: 0;
+}
 
-  li a, .dropbtn {
-    display: inline-block;
-    color: white;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-  }
+li a, .dropbtn {
+  display: inline-block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
 
-  li a:hover, .dropdown:hover .dropbtn {
-    background-color: red;
-  }
+li a:hover, .dropdown:hover .dropbtn {
+  background-color: red;
+}
 
-  li.dropdown {
-    display: inline-block;
-    position: relative; /* Make sure the dropdown is positioned relative to this element */
-  }
+li.dropdown {
+  display: inline-block;
+  position: relative;
+}
 
-  .dropdown-content {
-    display: none;
-    position: absolute;
-    top: 100%; /* Position the dropdown right below the button */
-    left: 0;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-    z-index: 9999 !important; /* High z-index to ensure it stays above other elements */
-  }
+/* Updated dropdown-content for dark theme */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #333; /* Dark background */
+  min-width: 160px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 9999 !important;
+}
 
-  .dropdown-content a {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    text-align: left;
-  }
+/* Updated dropdown links for dark theme */
+.dropdown-content a {
+  color: white; /* White text */
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
 
-  .dropdown-content a:hover {
-    background-color: #f1f1f1;
-  }
+/* Hover effect on dark links */
+.dropdown-content a:hover {
+  background-color: red; /* Slightly lighter dark color */
+}
 
-  /* Make dropdown visible when hovering */
-  .dropdown:hover .dropdown-content {
-    display: block;
-  }
+/* Style for the sub-dropdown */
+.dropdown-submenu {
+  position: relative;
+}
 
-  li.style-right {
-    float: right;
-  }
+/* Hide submenus by default */
+.submenu-content {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  background-color: #333;
+  min-width: 165px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+}
+
+.dropdown-submenu:hover .submenu-content {
+  display: block;
+}
+
+li a, .dropbtn {
+  display: inline-block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  outline: none;
+}
+
+li a:hover, .dropdown:hover .dropbtn {
+  background-color: red;
+  color: white;
+  text-decoration: none; 
+}
+
+li a:focus, .dropbtn:focus {
+  color: white; 
+  outline: none;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.truncate-text {
+  max-width: 80px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card {
+  background-color: #fafafa;
+  color: rgb(170, 0, 0);
+  text-align: center;
+}
+
+li.style-right {
+  float: right;
+}
+
+.right-button {
+  float: inline-end;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.right-button li {
+  float: none;
+  margin-left: 4px;
 }
 
 .column.middle {
   margin: auto;
   text-align: center;
   width: 95%;
+}
+
+header, .logout_button {
+  text-align: right;
+  display: flex-end;
+  margin-top: -55px;
+  margin-right: 15px;
+  margin-bottom: 15px;
+}
+
+.right_buttons{
+  float: right;
+  display: flex;
+  margin-right: 25px;
+}
+
+topnavbar, .input-group {
+  display: flex;
+  justify-content: center;
+  padding: 8px;
+  padding-right: 25px;
+}
+
+.signature-image {
+  max-width: 125px;
+  height: auto;
 }
 
 @media screen and (max-width: 600px) {

@@ -4,30 +4,67 @@ session_start();
 if (isset($_SESSION["user_id"])) {
     $mysqli = require __DIR__ . "/database.php";
 
-    $sql = "SELECT * FROM user WHERE id = {$_SESSION["user_id"]}";
-    $result = $mysqli->query($sql);
+    $stmt = $mysqli->prepare("SELECT * FROM user WHERE id = ?");
+    $stmt->bind_param("i", $_SESSION['user_id']);
+    $stmt->execute();
+    $result = $stmt->get_result();
     $user = $result->fetch_assoc();
 }
 
 include "db_conn.php";
 
 $search = "";
+$filter = isset($_GET['filter']) ? $_GET['filter'] : "";
+$building = isset($_GET['building']) ? $_GET['building'] : "";
+$group = isset($_GET['group']) ? $_GET['group'] : "";
 
 if (isset($_GET['search'])) {
     $search = mysqli_real_escape_string($conn, $_GET['search']);
-    $sql = "SELECT * FROM `checkin-out` WHERE 
-            first_name LIKE '%$search%' OR
-            last_name LIKE '%$search%' OR
-            building LIKE '%$search%' OR
-            room LIKE '%$search%' OR
-            key_number LIKE '%$search%' OR
-            floor LIKE '%$search%' OR
-            mealcard LIKE '%$search%' OR
-            checkin_signature LIKE '%$search%' OR
-            Checked_in_out LIKE '%$search%' OR
-            Date LIKE '%$search%'";
+    $sql = "SELECT co.*, l.linen_date_rented FROM `checkin-out` co
+            LEFT JOIN `linens` l ON co.id = l.resident_id
+            WHERE (co.first_name LIKE '%$search%' OR
+                   co.last_name LIKE '%$search%' OR
+                   co.building LIKE '%$search%' OR
+                   co.room LIKE '%$search%' OR
+                   co.key_number LIKE '%$search%' OR
+                   co.`group` LIKE '%$search%' OR
+                   co.mealcard LIKE '%$search%' OR
+                   co.checkin_signature LIKE '%$search%' OR
+                   co.Checked_in_out LIKE '%$search%' OR
+                   co.Date LIKE '%$search%')";
+    
+    if ($filter === 'checkedin') {
+        $sql .= " AND co.Checked_in_out = 'Checked In'";
+    } elseif ($filter === 'checkedout') {
+        $sql .= " AND co.Checked_in_out = 'Checked Out'";
+    }
+
+    if (!empty($building)) {
+        $sql .= " AND co.building = '$building'";
+    }
+
+    if (!empty($group)) {
+        $sql .= " AND co.`group` = '$group'";
+    }
+
 } else {
-    $sql = "SELECT * FROM `checkin-out`";
+    $sql = "SELECT co.*, l.linen_date_rented FROM `checkin-out` co
+            LEFT JOIN `linens` l ON co.id = l.resident_id
+            WHERE 1=1";
+
+    if ($filter === 'checkedin') {
+        $sql .= " AND co.Checked_in_out = 'Checked In'";
+    } elseif ($filter === 'checkedout') {
+        $sql .= " AND co.Checked_in_out = 'Checked Out'";
+    }
+
+    if (!empty($building)) {
+        $sql .= " AND co.building = '$building'";
+    }
+
+    if (!empty($group)) {
+        $sql .= " AND co.`group` = '$group'";
+    }
 }
 
 $result = mysqli_query($conn, $sql);
@@ -63,83 +100,141 @@ function highlight_search_result($text, $search) {
 <body>
 
 <div class="header">
-        <img alt="Frostburg State University" style="transform: translate(20px,23px);" src="src/FSU-logo.png">
+    <div>
+     <a href="https://www.frostburg.edu/">
+        <img alt="Frostburg State University" style="transform: translate(20px,20px);" src="src/FSU-logo.png">
+        </a>
         <?php if (isset($user)): ?>
-        <h2 class="p-3 mt-3" style="float:right"> Welcome, <?= htmlspecialchars($user["name"])?> <a href="logout.php" class="dropbtn btn btn-danger"> Logout </a> </h2>
+        <h2 class="mt-2 mx-2" style="float:right"> Welcome, <?= htmlspecialchars($user["name"])?></h2>
         <?php endif; ?>
+    </div>
+        
+    <div class="logout_button">
+        <a href="logout.php" class="dropbtn btn btn-danger"> Logout </a>
+    </div>
+</div>
+<div class="topnavbar">
+    <ul>
+        <li><a href="home.php" class="btn btn-dark mx-2 mt-2 mb-2">Home</a></li>
+        <li class="dropdown mb-2">
+            <a href="javascript:void(0)" class="dropbtn btn btn-dark mx-2 mt-2 mb-2 dropdown-toggle">Residence</a>
+            <div class="dropdown-content">
+                <a href="homepage.php">All Residence</a>
+                <a href="homepage.php?filter=checkedin">Checked In</a>
+                <a href="homepage.php?filter=checkedout">Checked Out</a>
+            </div>
+        </li>
+        <li class="dropdown">
+            <a href="javascript:void(0)" class="dropbtn btn btn-dark mx-2 mt-2 mb-2 dropdown-toggle">Buildings</a>
+            <div class="dropdown-content">
+                <a href="homepage.php?building=Allen">Allen</a>
+                <a href="homepage.php?building=Annapolis">Annapolis</a>
+                <a href="homepage.php?building=Cumberland">Cumberland</a>
+                <a href="homepage.php?building=Diehl">Diehl</a>
+                <a href="homepage.php?building=Frederick">Frederick</a>
+                <a href="homepage.php?building=Frost">Frost</a>
+                <a href="homepage.php?building=Gray">Gray</a>
+                <a href="homepage.php?building=Simpson">Simpson</a>
+                <a href="homepage.php?building=Sowers">Sowers</a>
+                <a href="homepage.php?building=Westminster">Westminster</a>
+            </div>
+        </li>
+        <li class="dropdown">
+            <a href="javascript:void(0)" class="dropbtn btn btn-dark mx-2 mt-2 mb-2 dropdown-toggle">Groups</a>
+            <div class="dropdown-content">
+                <div class="dropdown-submenu">
+                    <a href="javascript:void(0)" class="dropdown-toggle">Wooten</a>
+                    <div class="submenu-content">
+                        <a href="homepage.php?group=Wooten Session 1">Wooten Session 1</a>
+                        <a href="homepage.php?group=Wooten Session 2">Wooten Session 2</a>
+                        <a href="homepage.php?group=Wooten Session 3">Wooten Session 3</a>
+                        <a href="homepage.php?group=Wooten Session 4">Wooten Session 4</a>
+                        <a href="homepage.php?group=Wooten Session 5">Wooten Session 5</a>
+                    </div>
+                </div>
+                <div class="dropdown-submenu">
+                    <a href="javascript:void(0)" class="dropdown-toggle">FSY</a>
+                    <div class="submenu-content">
+                        <a href="homepage.php?group=FSY Week 1">FSY Week 1</a>
+                        <a href="homepage.php?group=FSY Week 2">FSY Week 2</a>
+                        <a href="homepage.php?group=FSY Week 3">FSY Week 3</a>
+                    </div>
+                </div>
+                <a href="homepage.php?group=MD All-State">MD All-State</a>
+                <a href="homepage.php?group=Arlington Soccer">Arlington Soccer</a>
+                <a href="homepage.php?group=Brit-AM">Brit-AM</a>
+                <a href="homepage.php?group=Camp Hope">Camp Hope</a>
+                <a href="homepage.php?group=LUC Staff">LUC Staff</a>
+                <a href="homepage.php?group=Res Life Staff">Res Life Staff</a>
+                <a href="homepage.php?group=Other">Other</a>
+            </div>
+        </li>
+        <li><a href="linen.php" class="dropbtn btn btn-dark mx-2 mt-2 mb-2">Linen Rentals</a></li>
+        <li><a href="Archives.php" class="btn btn-dark mx-2 mt-2 mb-2">Archives</a></li>
+        
+        <div class="right_buttons">
+            <li><a href="add_new.php" class="btn btn-secondary my-2 mx-2"> Add New </a></li>
+            <li><a href="import.php" class="btn btn-secondary my-2"> Insert Dataset </a></li>
+        </div>
+
+        <form method="get">
+            <div class="input-group">
+                <input type="hidden" name="filter" value="<?= htmlspecialchars($filter) ?>">
+                <input type="hidden" name="building" value="<?= htmlspecialchars($building) ?>">
+                <input type="hidden" name="group" value="<?= htmlspecialchars($group) ?>">
+                <input type="text" class="form-control" placeholder="Search..." id="searchInput" name="search" value="<?= htmlspecialchars($search) ?>">
+                <button type="submit" class="btn btn-secondary"><i class="fa-solid fa-search"></i></button>
+                <?php if (!empty($search)): ?>
+                    <a href="<?= $_SERVER['PHP_SELF'] . '?filter=' . urlencode($filter) . '&building=' . urlencode($building) . '&group=' . urlencode($group) ?>" class="btn btn-danger ms-2">Clear Search</a>
+                    <?php endif; ?>
+            </div>
+        </form>
+    </ul>
 </div>
 
-<div class="container">
+    <div class="column middle mt-4">
+        <table class="table table-hover text-center">
+        <div class="container">
         <?php
         if (isset($_GET['msg'])) {
             $msg = $_GET['msg'];
             echo
             '<div class="alert alert-warning alert-dismissible fade show" role="alert">
                 '.$msg.'
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>';
         }
         ?>
-</div>
-
-<div class="topnavbar">
-    <ul>
-    <li><a href="home.php" class="btn btn-dark mx-1 mt-1">Home</a></li>
-        <li class="dropdown">
-        <a href="javascript:void(0)" class="dropbtn btn btn-dark mb-1 mx-0 mt-1">Checked In/Out</a>
-            <div class="dropdown-content">
-            <a href="homepage.php">All Keys</a>
-            <a href="Checkedin.php">Checked In</a>
-            <a href="Checkedout.php">Checked Out</a>
-            <a href="">Archived Keys</a>
         </div>
-        </li>
-        <li class="dropdown">
-        <a href="javascript:void(0)" class="dropbtn btn btn-dark mb-1 mx-1 mt-1">Building</a>
-        <div class="dropdown-content">
-            <a href="">Allen</a>
-            <a href="">Annapolis</a>
-            <a href="">Cumberland</a>
-            <a href="">Diehl</a>
-            <a href="">Frederick</a>
-            <a href="">Frost</a>
-            <a href="">Gray</a>
-            <a href="">Simpson</a>
-            <a href="">Sowers</a>
-            <a href="">Westminster</a>
-        </div>
-        </li>
-        <li><a href="homepage.php" class="btn btn-dark mt-1">Status</a></li>
-        <li><a href="homepage.php" class="btn btn-dark mx-1 mt-1">Upcoming</a></li>
-        <li style="float:right"><a href="add_new.php" class="btn btn-dark mb-2 mx-1 mt-1"> Add New </a></li>
-        <li style="float:right"><a href="" class="btn btn-dark mb-1 mt-1"> Insert Dataset </a></li>
-        
-        <form class="p-4" method="get">
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search..." id="searchInput" name="search" value="<?= htmlspecialchars($search) ?>">
-                <button type="submit" class="btn btn-secondary"><i class="fa-solid fa-search"></i></button>
-                <?php if (!empty($search)): ?>
-                    <a href="<?= $_SERVER['PHP_SELF'] ?>" class="btn btn-danger ms-2"> Clear Search </a>
-                <?php endif; ?>
-            </div>
-        </form>
-    </ul>
-</div>
 
-    <div class="column middle">
-        <table class="table table-hover text-center">
+        <h4>
+            <?php
+            if ($filter === 'checkedin') {
+                echo "Checked In Residence";
+            } elseif ($filter === 'checkedout') {
+                echo "Checked Out Residence";
+            } elseif (!empty($building)) {
+                echo "{$building} Hall";
+            } elseif (!empty($group)) {
+                echo "{$group} Group";
+            } else {
+                echo "All Residence";
+            }
+            ?>
+        </h4>
             <thead class="table-dark">
                 <tr>
                     <th scope="col">First Name</th>
                     <th scope="col">Last Name</th>
+                    <th scope="col">Group</th>
                     <th scope="col">Building</th>
                     <th scope="col">Room / Bed</th>
                     <th scope="col">Key</th>
-                    <th scope="col">Floor</th>
                     <th scope="col">Mealcard</th>
                     <th scope="col">Signature</th>
                     <th scope="col">Checked In or Out</th>
                     <th scope="col">Date</th>
+                    <th scope="col">Notes</th>
                     <th scope="col">Action</th>
                 </tr>
             </thead>
@@ -148,28 +243,62 @@ function highlight_search_result($text, $search) {
                 <tr>
                     <td><?php echo highlight_search_result($row['first_name'], $search); ?></td>
                     <td><?php echo highlight_search_result($row['last_name'], $search); ?></td>
+                    <td><?php echo highlight_search_result($row['group'], $search); ?></td>
                     <td><?php echo highlight_search_result($row['building'], $search); ?></td>
                     <td><?php echo highlight_search_result($row['room'], $search); ?></td>
                     <td><?php echo highlight_search_result($row['key_number'], $search); ?></td>
-                    <td><?php echo highlight_search_result($row['floor'], $search); ?></td>
                     <td><?php echo highlight_search_result($row['mealcard'], $search); ?></td>
-                    <td><?php echo highlight_search_result($row['checkin_signature'], $search); ?></td>
+                    <td>
+                        <?php if (!empty($row['checkin_signature'])): ?>
+                            <img src="<?php echo htmlspecialchars($row['checkin_signature']); ?>" alt="Signature" class="signature-image">
+                        <?php else: ?>
+                            No Signature
+                        <?php endif; ?>
+                    </td>
                     <td><?php echo highlight_search_result($row['Checked_in_out'], $search); ?></td>
                     <td><?php echo highlight_search_result($row['Date'], $search); ?></td>
                     <td>
-                        <a href="edit.php?id=<?php echo $row['id']; ?>" class="link-dark"><i class="fa-solid fa-pen-to-square fs-5 me-3"></i></a>
-                        <a href="delete.php?id=<?php echo $row['id']; ?>" class="link-dark"><i class="fa-solid fa-trash fs-5"></i></a>
+                        <div class="truncate-text" title="<?= htmlspecialchars($row['notes']) ?>">
+                        </div>
+                        <?php if (strlen($row['notes']) > 1):?>
+                            <a data-bs-toggle="modal" data-bs-target="#noteModal<?= $row['id'] ?>">Read Note</a>
+                        <?php endif; ?>
+                        <div class="modal fade" id="noteModal<?= $row['id'] ?>" tabindex="-1" aria-labelledby="noteModalLabel<?= $row['id'] ?>" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="noteModalLabel<?= $row['id'] ?>">Full Note</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <?= nl2br(htmlspecialchars($row['notes'])) ?>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <a href="edit_linen.php?id=<?php echo $row['id']; ?>"><i class="fa-solid fa-bed <?php echo !empty($row['linen_date_rented']) ? 'text-success' : 'link-dark';?>"></i></a>
+                        <a href="edit.php?id=<?php echo $row['id']; ?>"><i class="fa-solid fa-pen-to-square link-dark mx-1"></i></a>
                     </td>
                 </tr>
                 <?php endwhile; ?>
             </tbody>
         </table>
+        
+        <?php if (empty($filter) && empty($building) && empty($group)): ?>
+        <form method="post" action="excelactive.php">
+            <input type="submit" name="export_excel" style="float:right" class="btn btn-success " value="Export to Excel">
+        </form>
+        <?php endif ?>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybU5p2Uj1d1iz1pSA9Wdnlrp9bJhFsD7/TfZp7xYfuN0KSf4I" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0sG1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
-
     <!-- Custom JS -->
     <script src=""></script>
 

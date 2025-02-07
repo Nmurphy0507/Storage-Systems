@@ -7,28 +7,43 @@
         $last_name = $_POST['last_name'];
         $building = $_POST['building'];
         $room = $_POST['room'];
-        $key_number = $_POST['key_number'];
-        $floor = $_POST['floor'];
-        $mealcard = $_POST['mealcard'];
-        $checkin_signature = $_POST['checkin_signature'];
-        $key_check = $_POST['key_check'];
-        $Date = $_POST['Date'];
-        if(empty($first_name) || empty($last_name) || empty($building) || empty($room) || empty($key_number) || empty($floor) || empty($mealcard) || empty($checkin_signature) || empty($key_check) || empty($Date)) {
-            echo "<script>alert('Please fill in all fields before saving.')</script>";
+    
+        $key_number = isset($_POST['key_number']) ? $_POST['key_number'] : null;
+        $group = isset($_POST['group']) ? $_POST['group'] : null;
+        $mealcard = isset($_POST['mealcard']) ? $_POST['mealcard'] : null;
+        $checkin_signature = isset($_POST['checkin_signature']) ? $_POST['checkin_signature'] : null;
+        $key_check = isset($_POST['key_check']) ? $_POST['key_check'] : null;
+        $key_returned = isset($_POST['key_returned']) ? $_POST['key_returned'] : null;
+        $mealcard_returned = isset($_POST['mealcard_returned']) ? $_POST['mealcard_returned'] : null;
+        $Date = isset($_POST['Date']) ? $_POST['Date'] : null;
+        $notes = isset($_POST['notes']) ? $_POST['notes'] : null;
+
+        $Checked_in_out = isset($_POST['key_check']) ? $_POST['key_check'] : null;
+
+        if(empty($first_name) || empty($last_name) || empty($building) || empty($room)) {
+            echo "<script>alert('Please fill in Firstname, Lastname, Building, Room # before submitting')</script>";
+        }
+    
+        // Insert query with optional fields
+        $sql = "INSERT INTO `checkin-out` (first_name, last_name, building, room, `group`, mealcard, key_number, checkin_signature, Checked_in_out, key_returned, mealcard_returned, Date, notes)
+                VALUES ('$first_name', '$last_name', '$building', '$room', 
+                        ". ($group ? "'$group'" : "NULL") .", 
+                        ". ($mealcard ? "'$mealcard'" : "NULL") .", 
+                        ". ($key_number ? "'$key_number'" : "NULL") .", 
+                        ". ($checkin_signature ? "'$checkin_signature'" : "NULL") .",
+                        '$Checked_in_out',
+                        ". ($key_returned ? "'$key_returned'" : "NULL") .",
+                        ". ($mealcard_returned ? "'$mealcard_returned'" : "NULL") .",
+                        ". ($Date ? "'$Date'" : "NULL") .",
+                        ". ($notes ? "'$notes'" : "NULL") .")";
+
+        $result = mysqli_query($conn, $sql);
+    
+        if($result) {
+            header("Location: homepage.php?msg=New record created successfully");
+            exit();
         } else {
-            $Checked_in_out = ($key_check == 'Checked In') ? 'Checked In' : 'Checked Out';
-
-            $sql = "INSERT INTO `checkin-out` (first_name, last_name, building, room, floor, mealcard, key_number, checkin_signature, Checked_in_out, Date) 
-                    VALUES ('$first_name', '$last_name', '$building', '$room', '$floor', '$mealcard', '$key_number', '$checkin_signature', '$Checked_in_out', '$Date')";
-
-            $result = mysqli_query($conn, $sql);
-
-            if($result) {
-                header("Location: homepage.php?msg=New record created successfully");
-                exit();
-            } else {
-                echo "Error: " . mysqli_error($conn); 
-            }
+            echo "Error: " . mysqli_error($conn);
         }
     }
 ?>
@@ -46,6 +61,8 @@
     <link rel="stylesheet" href="./src/edit.css">
     <title>PHP Keysorting App</title>
 
+    <!-- Include Signature Pad Library -->
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
 </head>
 
 <body>
@@ -68,6 +85,28 @@
                         <input type="text" id="last_name" class="form-control" name="last_name" placeholder="Last Name">
                     </div>
                 </div>
+                
+                <div class="mb-3">
+                    <label for="group" class="form-label">Group:</label>
+                    <select id="group" class="form-control" name="group">
+                    <option select hidden>Select a Group</option>
+                    <option>MD All-State</option>
+                    <option>Arlington Soccer</option>
+                    <option>Brit-AM</option>
+                    <option>Camp Hope</option>
+                    <option>LUC Staff</option>
+                    <option>Res Life Staff</option>
+                    <option>FSY Week 1</option>
+                    <option>FSY Week 2</option>
+                    <option>FSY Week 3</option>
+                    <option>Wooten Session 1</option>
+                    <option>Wooten Session 2</option>
+                    <option>Wooten Session 3</option>
+                    <option>Wooten Session 4</option>
+                    <option>Wooten Session 5</option>
+                    <option>Other</option>
+                    </select>
+                </div>
 
                 <div class="mb-3">
                     <label for="building" class="form-label">Building Name:</label>
@@ -86,48 +125,84 @@
                     </select>
                 </div>
 
+                <div class="mb-3">
+                    <label for="room" class="form-label">Room / Bed:</label>
+                    <input type="text" id="room" class="form-control" name="room" placeholder="Room / Bed #">
+                </div>
+                   
                 <div class="row mb-3">
-                    <div class="col">
-                        <label for="room" class="form-label">Room / Bed:</label>
-                        <input type="text" id="room" class="form-control" name="room" placeholder="Room / Bed #">
-                    </div>
-                    
                     <div class="col">
                         <label for="key_number" class="form-label">Key:</label>
                         <input type="text" id="key_number" class="form-control" name="key_number" placeholder="Key #">
                     </div>
-                </div>
 
-                <div class="mb-3">
-                    <label for="floor" class="form-label">Floor:</label>
-                    <input type="text" id="floor" class="form-control" name="floor" placeholder="Floor #">
-                </div>
-
-                <div class="mb-3">
-                    <label for="mealcard" class="form-label">Mealcard:</label>
-                    <input type="text" id="mealcard" class="form-control" name="mealcard" placeholder="Mealcard #">
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Signature:</label>
-                    <input type="text" class="form-control" name="checkin_signature" placeholder="Signature">
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Key Checked In or Out:</label><br>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="key_check" id="checked_in" value="Checked In">
-                        <label class="form-check-label" for="checked_in">Checked In</label>
+                    <div class="col">
+                        <label for="mealcard" class="form-label">Mealcard:</label>
+                        <input type="text" id="mealcard" class="form-control" name="mealcard" placeholder="Mealcard #">
                     </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="key_check" id="checked_out" value="Checked Out">
-                        <label class="form-check-label" for="checked_out">Checked Out</label>
+                </div>
+
+                <div class="mb-3">
+                    <label for="checkin_signature" class="form-label">Signature:</label>
+                    <canvas id="signature-pad" class="signature-pad" style="border: 1px solid #000; width: 100%; height: 150px;"></canvas>
+                    <input type="hidden" id="checkin_signature" name="checkin_signature">
+                    <button type="button" id="clear-signature" class="btn btn-secondary mt-2">Clear Signature</button>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col">
+                        <label class="form-label">Key Checked In or Out:</label><br>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="key_check" id="checked_in" value="Checked In">
+                            <label class="form-check-label" for="checked_in">Checked In</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="key_check" id="checked_out" value="Checked Out">
+                            <label class="form-check-label" for="checked_out">Checked Out</label>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <label class="form-label">Key Returned:</label><br>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="key_returned" id="key_returned_yes" value="Yes">
+                            <label class="form-check-label" for="key_returned_yes">Yes</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="key_returned" id="key_returned_no" value="No">
+                            <label class="form-check-label" for="key_returned_no">No</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="key_returned" id="key_returned_not_issued" value="Not Issued">
+                            <label class="form-check-label" for="key_returned_not_issued">Not Issued</label>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <label class="form-label">Mealcard Returned:</label><br>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="mealcard_returned" id="mealcard_returned_yes" value="Yes">
+                            <label class="form-check-label" for="mealcard_returned_yes">Yes</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="mealcard_returned" id="mealcard_returned_no" value="No">
+                            <label class="form-check-label" for="mealcard_returned_no">No</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="mealcard_returned" id="mealcard_returned_not_issued" value="Not Issued">
+                            <label class="form-check-label" for="mealcard_returned_not_issued">Not Issued</label>
+                        </div>
                     </div>
                 </div>
 
                 <div class="form-container mb-3">
                     <label for="Date" class="form-label">Date:</label>
-                    <input type="date" class="form-control" id="Date" name="Date" value="<?php echo htmlspecialchars($row['Date']); ?>">
+                    <input type="date" class="form-control" id="Date" name="Date">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Notes:</label>
+                    <input type="text" class="form-control" name="notes" placeholder="Enter any information about the resident. Don't forget to sign entries with your NAME and DATE the note was added.">
                 </div>
 
                 <div class="mt-3">
@@ -142,24 +217,52 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 
     <script>
-        function validateForm() {
+        
+    function validateForm() {
             var firstName = document.getElementById("first_name").value.trim();
             var lastName = document.getElementById("last_name").value.trim();
             var building = document.getElementById("building").value.trim();
             var room = document.getElementById("room").value.trim();
-            var keyNumber = document.getElementById("key_number").value.trim();
-            var floor = document.getElementById("floor").value.trim();
-            var mealcard = document.getElementById("mealcard").value.trim();
-            var signature = document.querySelector("input[name=checkin_signature]").value.trim();
-            var keyChecked = document.querySelector("input[name=key_check]:checked");
-            var Date = document.getElementById("Date").value.trim();
 
-            if(firstName === "" || lastName === "" || building === "" || room === "" || keyNumber === "" || floor === "" || mealcard === "" || signature === "" || keyChecked === null || Date === "") {
-                alert("Please fill in all fields before saving.");
+            if (firstName === "" || lastName === "" || building === "" || room === "") {
+                alert("Please fill in Firstname, Lastname, Building, Room # before submitting");
                 return false;
             }
             return true;
         }
+
+        var canvas = document.getElementById('signature-pad');
+        var signaturePad = new SignaturePad(canvas, {
+            backgroundColor: 'rgb(255, 255, 255)' // Set background color to white
+        });
+
+        // Set canvas dimensions explicitly
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+
+        // Clear the canvas and set the background color to white
+        function clearCanvas() {
+            var ctx = canvas.getContext('2d');
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            signaturePad.clear(); // Clear the signature pad
+        }
+
+        // Clear the canvas on page load
+        clearCanvas();
+
+        document.getElementById('clear-signature').addEventListener('click', function () {
+            clearCanvas();
+            document.getElementById('checkin_signature').value = '';
+        });
+
+        document.querySelector('form').addEventListener('submit', function (event) {
+            if (!signaturePad.isEmpty()) {
+                var signatureData = signaturePad.toDataURL();
+                document.getElementById('checkin_signature').value = signatureData;
+            }
+        });
     </script>
+
 </body>
 </html>
