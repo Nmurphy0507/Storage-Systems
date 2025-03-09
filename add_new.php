@@ -206,8 +206,8 @@
                 </div>
 
                 <div class="mt-3">
-                    <button type="submit" class="btn btn-success" name="submit">Save</button>
-                    <a href="homepage.php" class="btn btn-danger">Cancel</a>
+                    <button type="submit" class="btn btn-success mb-5" name="submit">Save</button>
+                    <a href="homepage.php" class="btn btn-secondary mb-5">Cancel</a>
                 </div>
 
             </form>

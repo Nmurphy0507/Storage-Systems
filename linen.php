@@ -170,6 +170,12 @@ function highlight_search_result($text, $search) {
             </tbody>
         </table>
 
+        <?php if (empty($filter) && empty($building) && empty($group)): ?>
+        <form method="post" action="excel_linen.php">
+            <input type="submit" name="export_excel" style="float:right" class="btn btn-success " value="Export to Excel">
+        </form>
+        <?php endif ?>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybU5p2Uj1d1iz1pSA9Wdnlrp9bJhFsD7/TfZp7xYfuN0KSf4I" crossorigin="anonymous"></script>

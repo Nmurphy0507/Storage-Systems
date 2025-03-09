@@ -189,6 +189,13 @@ $ArchivedResult = mysqli_query($conn, $archiveQuery);
             <?php endwhile; ?>
         </tbody>
     </table>
+
+    <?php if (empty($filter) && empty($building) && empty($group)): ?>
+        <form method="post" action="excel_archived_linen.php">
+            <input type="submit" name="export_excel" style="float:right" class="btn btn-success " value="Export to Excel">
+        </form>
+    <?php endif ?>
+
 </div>
 
 
