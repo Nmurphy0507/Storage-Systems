@@ -81,7 +81,6 @@ function highlight_search_result($text, $search) {
 
 $archiveQuery = "SELECT * FROM `ArchivedKeys`";
 $ArchivedResult = mysqli_query($conn, $archiveQuery);
-
 ?>
 
 <!DOCTYPE html>
