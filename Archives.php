@@ -125,6 +125,7 @@ h2{
         <li><a href="home.php" class="btn btn-dark mx-2 mt-2 mb-2">Home</a></li>
         <li class="dropdown mb-2"><a href="homepage.php" class="dropbtn btn btn-dark mx-2 mt-2 mb-2">Residence</a></li>
         <li><a href="linen.php" class="dropbtn btn btn-dark mx-2 mt-2 mb-2">Linen Rentals</a></li>
+        <li><a href="fan.php" class="btn btn-dark mx-2 mt-2 mb-2">Fan Rentals</a></li>
         <li><a href="Archives.php" class="btn btn-dark mx-2 mt-2 mb-2">Archives</a></li>
     </ul>
     
@@ -146,8 +147,8 @@ h2{
 
     
     <div class="column" style="overflow-x:auto;">
-        <h2> Fan Archives Maybe</h2>
-        <div class="archivebutton"><a href="ArchivedFans.php" class="dropbtn btn btn-danger mx-2 mt-2 mb-2">Fan Rentals Archives???</a></div>
+        <h2> Fan Archives </h2>
+        <div class="archivebutton"><a href="ArchivedFans.php" class="dropbtn btn btn-danger mx-2 mt-2 mb-2">Fan Rental Archives</a></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybU5p2Uj1d1iz1pSA9Wdnlrp9bJhFsD7/TfZp7xYfuN0KSf4I" crossorigin="anonymous"></script>

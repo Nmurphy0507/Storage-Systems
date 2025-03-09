@@ -3,7 +3,6 @@
     if(isset($_GET['id']) && is_numeric($_GET['id'])) {
         $id = $_GET['id'];
 
-        // SQL query to delete record
         $sql = "DELETE FROM `checkin-out` WHERE id = ?";
         $stmt = mysqli_prepare($conn, $sql);
 
@@ -11,7 +10,6 @@
         mysqli_stmt_execute($stmt);
 
         if(mysqli_stmt_affected_rows($stmt) > 0) {
-            // Redirect to homepage with a success message
             header("Location: homepage.php?msg=Record deleted successfully");
             exit();
         } else {

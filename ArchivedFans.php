@@ -19,35 +19,29 @@ $currentDate = date('Y-m-d');
 // Calculate the date 2 days ago
 $twoDaysAgo = date('Y-m-d', strtotime('-2 days'));
 
-// Select records where key is checked out for more than 2 days
-$sql = "SELECT * FROM `checkin-out` WHERE `Checked_in_out` = 'Checked Out' AND `Date` <= '$twoDaysAgo'";
+// Select records where linen is returned for more than 2 days
+$sql = "SELECT * FROM `fan` WHERE `fan_date_returned` IS NOT NULL AND `fan_date_returned` <= '$twoDaysAgo'";
 $result = mysqli_query($conn, $sql);
 
 if (mysqli_num_rows($result) > 0) {
     while ($row = mysqli_fetch_assoc($result)) {
+        $id = $row['id'];
+        $resident_id = $row['resident_id'];
         $first_name = mysqli_real_escape_string($conn, $row['first_name']);
         $last_name = mysqli_real_escape_string($conn, $row['last_name']);
         $building = mysqli_real_escape_string($conn, $row['building']);
         $room = mysqli_real_escape_string($conn, $row['room']);
-        $key_number = mysqli_real_escape_string($conn, $row['key_number']);
         $group = mysqli_real_escape_string($conn, $row['group']);
-        $mealcard = mysqli_real_escape_string($conn, $row['mealcard']);
-        $checkin_signature = mysqli_real_escape_string($conn, $row['checkin_signature']);
-        $checked_in_out = mysqli_real_escape_string($conn, string: $row['Checked_in_out']);
-        $key_returned = mysqli_real_escape_string($conn, $row['key_returned']);
-        $mealcard_returned = mysqli_real_escape_string($conn, $row['mealcard_returned']);
-        $date = mysqli_real_escape_string($conn, $row['Date']);
-        $notes = mysqli_real_escape_string($conn, $row['notes']);
+        $fan_quantity = mysqli_real_escape_string($conn, $row['fan_quantity']);
+        $fan_cost = mysqli_real_escape_string($conn, $row['fan_cost']);
+        $fan_date_rented = mysqli_real_escape_string($conn, $row['fan_date_rented']);
+        $fan_date_returned = mysqli_real_escape_string($conn, $row['fan_date_returned']);
         
-        // Insert into ArchivedKeys table
-        $archiveSql = "INSERT INTO ArchivedKeys (`first_name`, `last_name`, `building`, `room`, `key_number`, `group`, `mealcard`, `checkin_signature`, `Checked_in_out`, `key_returned`, `mealcard_returned`, `Date`, `notes`)
-                        VALUES ('$first_name', '$last_name', '$building', '$room', '$key_number', '$group', '$mealcard', '$checkin_signature', '$checked_in_out', '$key_returned', '$mealcard_returned', '$date', '$notes')";
+        $archiveSql = "INSERT INTO fan_archive (`id`, `resident_id`, `first_name`, `last_name`, `building`, `room`, `group`, `fan_quantity`, `fan_cost`, `fan_date_rented`, `fan_date_returned`)
+                        VALUES ('$id', '$resident_id', '$first_name', '$last_name', '$building', '$room', '$group', '$fan_quantity', '$fan_cost', '$fan_date_rented', '$fan_date_returned')";
         
-        
-        // Run the insert query
         if (mysqli_query($conn, $archiveSql)) {
-            // After inserting, delete the record from the main table
-            $deleteSql = "DELETE FROM `checkin-out` WHERE `id` = {$row['id']}";
+            $deleteSql = "DELETE FROM `fan` WHERE `id` = {$row['id']}";
             mysqli_query($conn, $deleteSql);
         }
     }
@@ -57,19 +51,18 @@ $search = '';
 
 if (isset($_GET['search'])) {
     $search = mysqli_real_escape_string($conn, $_GET['search']);
-    $sql = "SELECT * FROM `ArchivedKeys` WHERE
+    $sql = "SELECT * FROM `fan_archive` WHERE
             first_name LIKE '%$search%' OR
             last_name LIKE '%$search%' OR
             building LIKE '%$search%' OR
             room LIKE '%$search%' OR
-            key_number LIKE '%$search%' OR
-            'group' LIKE '%$search%' OR
-            mealcard LIKE '%$search%' OR
-            checkin_signature LIKE '%$search%' OR
-            Checked_in_out LIKE '%$search%' OR
-            Date LIKE '%$search%'";
+            `group` LIKE '%$search%' OR
+            fan_quantity LIKE '%$search%' OR
+            fan_cost LIKE '%$search%' OR
+            fan_date_rented LIKE '%$search%' OR
+            fan_date_returned LIKE '%$search%'";
 } else {
-    $sql = "SELECT * FROM `ArchivedKeys`";
+    $sql = "SELECT * FROM `fan_archive`";
 }
 
 function highlight_search_result($text, $search) {
@@ -79,7 +72,7 @@ function highlight_search_result($text, $search) {
     return $text;
 }
 
-$archiveQuery = "SELECT * FROM `ArchivedKeys`";
+$archiveQuery = "SELECT * FROM `fan_archive`";
 $ArchivedResult = mysqli_query($conn, $archiveQuery);
 ?>
 
@@ -130,22 +123,18 @@ $ArchivedResult = mysqli_query($conn, $archiveQuery);
 
         <form method="get">
             <div class="input-group">
-                <input type="hidden" name="filter" value="<?= htmlspecialchars($filter) ?>">
-                <input type="hidden" name="building" value="<?= htmlspecialchars($building) ?>">
-                <input type="hidden" name="group" value="<?= htmlspecialchars($group) ?>">
                 <input type="text" class="form-control" placeholder="Search..." id="searchInput" name="search" value="<?= htmlspecialchars($search) ?>">
                 <button type="submit" class="btn btn-secondary"><i class="fa-solid fa-search"></i></button>
                 <?php if (!empty($search)): ?>
-                    <a href="<?= $_SERVER['PHP_SELF'] . '?filter=' . urlencode($filter) . '&building=' . urlencode($building) . '&group=' . urlencode($group) ?>" class="btn btn-danger ms-2">Clear Search</a>
-                    <?php endif; ?>
+                    <a href="<?= $_SERVER['PHP_SELF'] ?>" class="btn btn-danger ms-2">Clear Search</a>
+                <?php endif; ?>
             </div>
         </form>
     </ul>
 </div>
 
-<!-- Archived Keys Section -->
 <div class="column middle mt-4">
-    <h4>Archived Residence</h4>
+    <h4>Archived Fans</h4>
     <table class="table table-hover text-center">
 
     <div class="container">
@@ -168,13 +157,10 @@ $ArchivedResult = mysqli_query($conn, $archiveQuery);
                 <th scope="col">Group</th>
                 <th scope="col">Building</th>
                 <th scope="col">Room / Bed</th>
-                <th scope="col">Key</th>
-                <th scope="col">Mealcard</th>
-                <th scope="col">Signature</th>
-                <th scope="col">Checked In or Out</th>
-                <th scope="col">Date</th>
-                <th scope="col">Archived Date</th>
-                <th scope="col">Notes</th>
+                <th scope="col">Fan Quantity</th>
+                <th scope="col">Fan Cost</th>
+                <th scope="col">Date Rented</th>
+                <th scope="col">Date Returned</th>
                 <th scope="col">Action</th>
             </tr>
         </thead>
@@ -187,43 +173,23 @@ $ArchivedResult = mysqli_query($conn, $archiveQuery);
                 <td><?php echo highlight_search_result($row['group'], $search); ?></td>
                 <td><?php echo highlight_search_result($row['building'], $search); ?></td>
                 <td><?php echo highlight_search_result($row['room'], $search); ?></td>
-                <td><?php echo highlight_search_result($row['key_number'], $search); ?></td>
-                <td><?php echo highlight_search_result($row['mealcard'], $search); ?></td>
-                <td><?php echo '<img src="'.$row['checkin_signature'].'" alt="Signature" style="max-width: 100px; max-height: 30px;" />'; ?></td>
-                <td><?php echo highlight_search_result($row['Checked_in_out'], $search); ?></td>
-                <td><?php echo highlight_search_result($row['Date'], $search); ?></td>
-                <td><?php echo highlight_search_result($row['ArchivedDate'], $search); ?></td>
-                <td>
-                    <div class="truncate-text" title="<?= htmlspecialchars($row['notes']) ?>"> </div>
-                        <?php if (strlen($row['notes']) > 1):?>
-                            <a data-bs-toggle="modal" data-bs-target="#noteModal<?= $row['id'] ?>">Read Note</a>
-                        <?php endif; ?>
-                        <div class="modal fade" id="noteModal<?= $row['id'] ?>" tabindex="-1" aria-labelledby="noteModalLabel<?= $row['id'] ?>" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="noteModalLabel<?= $row['id'] ?>">Full Note</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <?= nl2br(htmlspecialchars($row['notes'])) ?>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                    <td><a href="restore.php?id=<?php echo $row['id']; ?>" class="link-dark"><i class="fa-solid fa-undo fs-5 me-3"></i></a></td>
+                <td><?php echo highlight_search_result($row['fan_quantity'], $search); ?></td>
+                <td><?php echo highlight_search_result($row['fan_cost'], $search); ?></td>
+                <td><?php echo highlight_search_result($row['fan_date_rented'], $search); ?></td>
+                <td><?php echo highlight_search_result($row['fan_date_returned'], $search); ?></td>
+                <td><a href="restore_fan.php?id=<?php echo $row['id']; ?>" class="link-dark"><i class="fa-solid fa-undo fs-5 me-3"></i></a></td>
                 </tr>
                 <?php endif; ?>
             <?php endwhile; ?>
         </tbody>
     </table>
-    <form method="post" action="excel.php">
+
+    <?php if (empty($filter) && empty($building) && empty($group)): ?>
+        <form method="post" action="excel_archived_fan.php">
             <input type="submit" name="export_excel" style="float:right" class="btn btn-success " value="Export to Excel">
-    </form>
+        </form>
+    <?php endif ?>
+
 </div>
 
 

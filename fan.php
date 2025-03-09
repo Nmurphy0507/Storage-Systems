@@ -20,29 +20,28 @@ $group = isset($_GET['group']) ? $_GET['group'] : "";
 
 if (isset($_GET['search'])) {
     $search = mysqli_real_escape_string($conn, $_GET['search']);
-    $sql = "SELECT co.id as resident_id, co.first_name, co.last_name, co.building, co.room, co.`group`, l.first_name, l.last_name, l.building, l.room, l.`group`, l.linen_type, l.linen_quantity, l.linen_cost, l.linen_date_rented, l.linen_date_returned
-            FROM `linens` l
-            LEFT JOIN `checkin-out` co ON co.id = l.resident_id
+    $sql = "SELECT co.id as resident_id, co.first_name, co.last_name, co.building, co.room, co.`group`, f.first_name, f.last_name, f.building, f.room, f.`group`, f.fan_quantity, f.fan_cost, f.fan_date_rented, f.fan_date_returned
+            FROM `fan` f
+            LEFT JOIN `checkin-out` co ON co.id = f.resident_id
             WHERE (co.first_name LIKE '%$search%' OR
                    co.last_name LIKE '%$search%' OR
                    co.building LIKE '%$search%' OR
                    co.room LIKE '%$search%' OR
                    co.`group` LIKE '%$search%' OR
-                   l.first_name LIKE '%$search%' OR
-                   l.last_name LIKE '%$search%' OR
-                   l.building LIKE '%$search%' OR
-                   l.room LIKE '%$search%' OR
-                   l.`group` LIKE '%$search%' OR
-                   l.linen_type LIKE '%$search%' OR
-                   l.linen_quantity LIKE '%$search%' OR
-                   l.linen_cost LIKE '%$search%' OR
-                   l.linen_date_rented LIKE '%$search%' OR
-                   l.linen_date_returned LIKE '%$search%')";
+                   f.first_name LIKE '%$search%' OR
+                   f.last_name LIKE '%$search%' OR
+                   f.building LIKE '%$search%' OR
+                   f.room LIKE '%$search%' OR
+                   f.`group` LIKE '%$search%' OR
+                   f.fan_quantity LIKE '%$search%' OR
+                   f.fan_cost LIKE '%$search%' OR
+                   f.fan_date_rented LIKE '%$search%' OR
+                   f.fan_date_returned LIKE '%$search%')";
 } else {
-    $sql = "SELECT co.id as resident_id, co.first_name, co.last_name, co.building, co.room, co.`group`, l.first_name, l.last_name, l.building, l.room, l.`group`, l.linen_type, l.linen_quantity, l.linen_cost, l.linen_date_rented, l.linen_date_returned
-            FROM `linens` l
-            LEFT JOIN `checkin-out` co ON co.id = l.resident_id
-            WHERE l.linen_date_rented IS NOT NULL";
+    $sql = "SELECT co.id as resident_id, co.first_name, co.last_name, co.building, co.room, co.`group`, f.first_name, f.last_name, f.building, f.room, f.`group`, f.fan_quantity, f.fan_cost, f.fan_date_rented, f.fan_date_returned
+            FROM `fan` f
+            LEFT JOIN `checkin-out` co ON co.id = f.resident_id
+            WHERE f.fan_date_rented IS NOT NULL";
 }
 $result = mysqli_query($conn, $sql);
 
@@ -100,7 +99,7 @@ function highlight_search_result($text, $search) {
         <li><a href="Archives.php" class="btn btn-dark mx-2 mt-2 mb-2">Archives</a></li>
 
         <div class="right_buttons">
-            <li><a href="add_new_linen.php" class="btn btn-secondary my-2"> Add New </a></li>
+            <li><a href="add_new_fan.php" class="btn btn-secondary my-2"> Add New </a></li>
         </div>
 
         <form method="get">
@@ -134,7 +133,7 @@ function highlight_search_result($text, $search) {
         ?>
         </div>
 
-        <h4>Linen Rentals</h4>
+        <h4>Fan Rentals</h4>
             <thead class="table-dark">
                 <tr>
                     <th scope="col">First Name</th>
@@ -142,9 +141,8 @@ function highlight_search_result($text, $search) {
                     <th scope="col">Group</th>
                     <th scope="col">Building</th>
                     <th scope="col">Room / Bed</th>
-                    <th scope="col">Linen Type</th>
-                    <th scope="col">Linen Quantity</th>
-                    <th scope="col">Linen Cost</th>
+                    <th scope="col">Fan Quantity</th>
+                    <th scope="col">Fan Cost</th>
                     <th scope="col">Date Rented</th>
                     <th scope="col">Date Returned</th>
                     <th scope="col">Action</th>
@@ -158,13 +156,12 @@ function highlight_search_result($text, $search) {
                     <td><?php echo highlight_search_result($row['group'], $search); ?></td>
                     <td><?php echo highlight_search_result($row['building'], $search); ?></td>
                     <td><?php echo highlight_search_result($row['room'], $search); ?></td>
-                    <td><?php echo highlight_search_result($row['linen_type'], $search); ?></td>
-                    <td><?php echo highlight_search_result($row['linen_quantity'], $search); ?></td>
-                    <td><?php echo highlight_search_result($row['linen_cost'], $search); ?></td>
-                    <td><?php echo highlight_search_result($row['linen_date_rented'], $search); ?></td>
-                    <td><?php echo highlight_search_result($row['linen_date_returned'], $search); ?></td>
+                    <td><?php echo highlight_search_result($row['fan_quantity'], $search); ?></td>
+                    <td><?php echo highlight_search_result($row['fan_cost'], $search); ?></td>
+                    <td><?php echo highlight_search_result($row['fan_date_rented'], $search); ?></td>
+                    <td><?php echo highlight_search_result($row['fan_date_returned'], $search); ?></td>
                     <td>
-                        <a href="edit_linen.php?id=<?php echo $row['resident_id']; ?>"><i class="fa-solid fa-pen-to-square fs-5 me-1 link-dark"></i></a>
+                        <a href="edit_fan.php?id=<?php echo $row['resident_id']; ?>"><i class="fa-solid fa-pen-to-square fs-5 me-1 link-dark"></i></a>
                     </td>
                 </tr>
                 <?php endwhile; ?>
@@ -172,7 +169,7 @@ function highlight_search_result($text, $search) {
         </table>
 
         <?php if (empty($filter) && empty($building) && empty($group)): ?>
-        <form method="post" action="excel_linen.php">
+        <form method="post" action="excel_fan.php">
             <input type="submit" name="export_excel" style="float:right" class="btn btn-success " value="Export to Excel">
         </form>
         <?php endif ?>

@@ -48,8 +48,9 @@ if (isset($_GET['search'])) {
     }
 
 } else {
-    $sql = "SELECT co.*, l.linen_date_rented FROM `checkin-out` co
+    $sql = "SELECT co.*, l.linen_date_rented, f.fan_date_rented FROM `checkin-out` co
             LEFT JOIN `linens` l ON co.id = l.resident_id
+            LEFT JOIN `fan` f ON co.id = f.resident_id
             WHERE 1=1";
 
     if ($filter === 'checkedin') {
@@ -170,6 +171,7 @@ function highlight_search_result($text, $search) {
             </div>
         </li>
         <li><a href="linen.php" class="dropbtn btn btn-dark mx-2 mt-2 mb-2">Linen Rentals</a></li>
+        <li><a href="fan.php" class="btn btn-dark mx-2 mt-2 mb-2">Fan Rentals</a></li>
         <li><a href="Archives.php" class="btn btn-dark mx-2 mt-2 mb-2">Archives</a></li>
         
         <div class="right_buttons">
@@ -282,6 +284,7 @@ function highlight_search_result($text, $search) {
                     </td>
                     <td>
                         <a href="edit_linen.php?id=<?php echo $row['id']; ?>"><i class="fa-solid fa-bed <?php echo !empty($row['linen_date_rented']) ? 'text-success' : 'link-dark';?>"></i></a>
+                        <a href="edit_fan.php?id=<?php echo $row['id']; ?>"><i class="fa-solid fa-fan <?php echo !empty($row['fan_date_rented']) ? 'text-success' : 'link-dark';?>"></i></a>
                         <a href="edit.php?id=<?php echo $row['id']; ?>"><i class="fa-solid fa-pen-to-square link-dark mx-1"></i></a>
                     </td>
                 </tr>
