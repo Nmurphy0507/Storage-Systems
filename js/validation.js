@@ -1,6 +1,3 @@
-    // if i add a # sign in front of the word signup it works otherwise it doesn't.
-    //const validation = new JustValidate("#signup"); 
-    
     const validation = new JustValidate("signup");
 
         validation

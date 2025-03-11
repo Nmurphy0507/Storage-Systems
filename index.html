@@ -11,36 +11,58 @@
     <link rel="stylesheet" href="./src/main.css">
     <script src="https://unpkg.com/just-validate@latest/dist/just-validate.production.min.js" defer></script>
     <script src="./js/validation.js" defer></script>
-
 </head>
-<body> 
-    <div class="container">
-        <form class="form" action="process-signup.php" method="post" id="signup" novalidate>
-            <h1 class="form__title">Create Account</h1>
-            <div class="form__message form__message--error"></div>
-            <div class="form__input-group">
-                <input type="text" id="signupUsername" class="form__input" placeholder="Username" name="Username">
-                <div class="form__input-error-message"></div>
-            </div>
-            <div class="form__input-group">
-                <input type="text" id="signupEmail" class="form__input" placeholder="Email Address" name="Email">
-                <div class="form__input-error-message"></div>
-            </div>
-            <div class="form__input-group">
-                <input type="password" id="signupPassword" class="form__input" placeholder="Password" name="Password">
-                <div class="form__input-error-message"></div>
-            </div>
-            <div class="form__input-group">
-                <input type="password" id="signupConfirmPassword" class="form__input" placeholder="Confirm Password" name="ConfirmPassword">
-                <div class="form__input-error-message"></div>
-            </div>
-            <button class="form__button" type="submit">Continue</button>
-            <p class="form__text">
-                <a class="form__link" href="login.php" id="linkLogin">Already have an account? Sign in</a>
-            </p>
-        </form>
-    </div>
-    
+<body>
+<div class="container">
+    <form class="form" id="signupForm" method="POST">
+        <h1 class="form__title">Sign Up</h1>
+
+        <div class="form__input-group">
+            <input type="text" name="Username" class="form__input" autofocus placeholder="Username">
+            <div class="form__input-error-message" id="usernameError"></div>
+        </div>
+        <div class="form__input-group">
+            <input type="text" name="Email" class="form__input" placeholder="Email">
+            <div class="form__input-error-message" id="emailError"></div>
+        </div>
+        <div class="form__input-group">
+            <input type="password" name="Password" class="form__input" placeholder="Password">
+            <div class="form__input-error-message" id="passwordError"></div>
+        </div>
+        <div class="form__input-group">
+            <input type="password" name="ConfirmPassword" class="form__input" placeholder="Confirm Password">
+            <div class="form__input-error-message" id="confirmPasswordError"></div>
+        </div>
+        <button class="form__button" type="submit">Sign Up</button>
+        <p class="form__text">
+            <a class="form__link" href="login.php" id="linkLogin">Already have an account? Login</a>
+        </p>
+    </form>
+</div>
+
+<script>
+document.getElementById('signupForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const formData = new FormData(this);
+
+    fetch('process-signup.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = 'signup-successful-button.html';
+        } else {
+            document.getElementById('usernameError').textContent = data.errors.username || '';
+            document.getElementById('emailError').textContent = data.errors.email || '';
+            document.getElementById('passwordError').textContent = data.errors.password || '';
+            document.getElementById('confirmPasswordError').textContent = data.errors.confirmPassword || '';
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+</script>
 </body>
 </html>
-

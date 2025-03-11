@@ -178,7 +178,7 @@ function highlight_search_result($text, $search) {
             <li><a href="add_new.php" class="btn btn-secondary my-2 mx-2"> Add New </a></li>
             <li><a href="import.php" class="btn btn-secondary my-2"> Insert Dataset </a></li>
         </div>
-
+        
         <form method="get">
             <div class="input-group">
                 <input type="hidden" name="filter" value="<?= htmlspecialchars($filter) ?>">

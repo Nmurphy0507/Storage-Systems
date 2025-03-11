@@ -2,22 +2,25 @@
 
 $is_invalid = false;
 
-if($_SERVER["REQUEST_METHOD"] === "POST"){
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
     
-    $mysqli = require __DIR__ . "/database.php";
+    $email = $_POST["Email"];
+    
+    if (substr($email, -14) !== "@frostburg.edu") {
+        $is_invalid = true;
+    } else {
+        $mysqli = require __DIR__ . "/database.php";
 
-    $sql = sprintf("SELECT * FROM user
-                   WHERE   Email = '%s'",
-                   $mysqli->real_escape_string($_POST["Email"]));
+        $sql = sprintf("SELECT * FROM user
+                        WHERE Email = '%s'",
+                        $mysqli->real_escape_string($email));
         
-        $result = $mysqli->query($sql);
-
         $result = $mysqli->query($sql);
 
         $user = $result->fetch_assoc();
 
-        if($user){
-            if (password_verify($_POST["password"], $user["password_hash"])){
+        if ($user) {
+            if (password_verify($_POST["password"], $user["password_hash"])) {
                
                 session_start();
 
@@ -30,7 +33,8 @@ if($_SERVER["REQUEST_METHOD"] === "POST"){
             }
         }
 
-    $is_invalid = true;
+        $is_invalid = true;
+    }
 }
 ?>
 
@@ -40,7 +44,9 @@ if($_SERVER["REQUEST_METHOD"] === "POST"){
     <meta charset="utf-8">
     <title>Login</title>
     <link rel="shortcut icon" href="/assets/favicon.ico">
-    <link rel="preconnect" href="https://fonts.googleapis.com"> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com"> 
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./src/main.css">
 </head>
 
@@ -50,12 +56,12 @@ if($_SERVER["REQUEST_METHOD"] === "POST"){
             <h1 class="form__title">Login</h1>
 
             <?php if ($is_invalid): ?>
-                <em> Invalid login </em>
+                <em> Invalid login. Email must be @frostburg.edu </em>
             <?php endif; ?>
 
             <div class="form__input-group">
                 <input type="text" name="Email" class="form__input" autofocus placeholder="Email"
-                 value = "<?= htmlspecialchars($_POST["Email"] ?? "") ?>">
+                 value="<?= htmlspecialchars($_POST["Email"] ?? "") ?>">
                 <div class="form__input-error-message"></div>
             </div>
             <div class="form__input-group">

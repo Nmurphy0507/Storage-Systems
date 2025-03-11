@@ -1,48 +1,60 @@
 <?php
-     if (empty($_POST["Username"])){
-        die("Username is required");
-     }  
-     
-     if (! filter_var($_POST["Email"], FILTER_VALIDATE_EMAIL)){
-        die("Valid email address required");
-     } 
+header('Content-Type: application/json');
 
-     if (strlen($_POST["Password"]) < 8){
-        die("Password must be at least 8 character");
-     }
-     if (! preg_match("/[a-z]/i", $_POST["Password"])) {
-        die("Password must contain at least one letter");
-     }
-     if (! preg_match("/[0-9]/i", $_POST["Password"])) {
-        die("Password must contain at least one number");
-     }
-     if ($_POST["Password"] !== $_POST["ConfirmPassword"]){
-         die("Passwords must match");
-     }
+$errors = [];
+$data = [];
 
-     $password_hash = password_hash($_POST["Password"], PASSWORD_DEFAULT);
+if (empty($_POST["Username"])) {
+    $errors['username'] = 'Username is required';
+}
 
-     $mysqli = require __DIR__ . "/database.php";
+if (!filter_var($_POST["Email"], FILTER_VALIDATE_EMAIL)) {
+    $errors['email'] = 'Valid email address required';
+} elseif (substr($_POST["Email"], -14) !== "@frostburg.edu") {
+    $errors['email'] = 'Email must be from @frostburg.edu';
+}
 
-     $sql = "INSERT INTO user (name, Email, password_hash)
-             VALUES (?,?,?)";
+if (strlen($_POST["Password"]) < 8) {
+    $errors['password'] = 'Password must be at least 8 characters';
+} elseif (!preg_match("/[a-z]/i", $_POST["Password"])) {
+    $errors['password'] = 'Password must contain at least one letter';
+} elseif (!preg_match("/[0-9]/i", $_POST["Password"])) {
+    $errors['password'] = 'Password must contain at least one number';
+}
 
-     $stmt = $mysqli->stmt_init();
+if ($_POST["Password"] !== $_POST["ConfirmPassword"]) {
+    $errors['confirmPassword'] = 'Passwords must match';
+}
 
-     if (! $stmt->prepare($sql)){
-         die("SQL error: " . $mysqli->error);
-     }
+if (!empty($errors)) {
+    $data['success'] = false;
+    $data['errors'] = $errors;
+} else {
+    $password_hash = password_hash($_POST["Password"], PASSWORD_DEFAULT);
 
-     $stmt->bind_param("sss",
-                       $_POST["Username"],
-                       $_POST["Email"],
-                       $password_hash);
+    $mysqli = require __DIR__ . "/database.php";
 
-     if($stmt->execute()){
-      header("Location: signup-successful-button.html");
-      exit;
+    $sql = "INSERT INTO user (name, Email, password_hash)
+            VALUES (?,?,?)";
 
-       } else {
-        echo "SQL error: " . $stmt->error;
+    $stmt = $mysqli->stmt_init();
+
+    if (!$stmt->prepare($sql)) {
+        die("SQL error: " . $mysqli->error);
     }
-?>   
+
+    $stmt->bind_param("sss",
+                      $_POST["Username"],
+                      $_POST["Email"],
+                      $password_hash);
+
+    if ($stmt->execute()) {
+        $data['success'] = true;
+    } else {
+        $data['success'] = false;
+        $data['errors']['database'] = 'Database error: ' . $stmt->error;
+    }
+}
+
+echo json_encode($data);
+?>

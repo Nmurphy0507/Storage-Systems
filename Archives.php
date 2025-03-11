@@ -134,7 +134,7 @@ h2{
     </form>
 </div>
 
-<div class="row">
+<div class="row" style="overflow-x:auto; margin-top: 25px;">
     <div class="column" style="overflow-x:auto;">
         <h2> Residence Key Archives </h2>
         <div class="archivebutton"><a href="ArchivedKeys.php" class="dropbtn btn btn-danger mx-2 mt-2 mb-2">Residence Archives</a></div>
