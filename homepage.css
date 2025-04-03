@@ -58,7 +58,7 @@ li.dropdown {
   position: absolute;
   top: 100%;
   left: 0;
-  background-color: #333; /* Dark background */
+  background-color: #333;
   min-width: 160px;
   box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
   z-index: 9999 !important;
