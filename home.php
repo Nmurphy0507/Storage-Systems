@@ -96,7 +96,7 @@ while ($row_groups = mysqli_fetch_assoc($result_groups)) {
 table {
   font-family: arial, sans-serif;
   border-collapse: collapse;
-  width: 75%;
+  width: 90%;
   margin: auto;
 }
 
@@ -120,25 +120,57 @@ h2 {
   color: black;
 }
 
-.upcoming-events {
-  background-color: white;
-  padding-left: 15px;
-  padding-right: 15px;
-}
-
-.buildings-table {
-
-}
-
-.groups-table {
-  
-}
-
 .calender-buttons {
-  text-align: right;
+  text-align: center;
   padding: auto;
   margin: auto;
 }
+
+.calendar {
+    width: 500px;
+    padding-left: 15px;
+    margin: auto;
+}
+
+.calendar-header {
+    text-align: center;
+    background-color: #212529;
+    color: white;
+    padding: 10px;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background-color:rgb(188, 0, 0);
+    color: white;
+}
+
+.calendar-days div {
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.calendar-dates {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background-color: white;
+}
+
+.calendar-dates div {
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.today {
+    background-color: #ffdd57;
+    font-weight: bold;
+}
+
 </style>
 </head>
 
@@ -174,26 +206,25 @@ h2 {
 
 <div class="row">
     <div class="column" style="overflow-x:auto;">
-      <div class="upcoming-events">
-        <h2>Upcoming Events Calender</h2>
-          <table style="width: 100%;">
-            <tr>
-              <th> Upcoming Events Calender </th>
-              <td>FSY Week 1 10/25/3024</td>
-              <td>FSY Week 2 12/24/3423</td>
-            </tr>
-          </table>
-        <div class="calender-buttons">
-          <button class="btn btn-secondary my-2 mx-2">Save</button>
-          <button class="btn btn-secondary my-2 mx-2">Edit</button>
-          <button class="btn btn-secondary my-2 mx-2">Delete</button>
+      <div class="calendar">
+        <div class="calendar-header">April 4</div>
+          <div class="calendar-days">
+              <div>Sun</div>
+              <div>Mon</div>
+              <div>Tue</div>
+              <div>Wed</div>
+              <div>Thu</div>
+              <div>Fri</div>
+              <div>Sat</div>
+          </div>
+          <div class="calendar-dates">
+              <div></div> <div></div> <div>1</div> <div>2</div> <div>3</div> <div class="today">4</div> <div>5</div> <div>6</div> <div>7</div> <div>8</div> <div>9</div> <div>10</div> <div>11</div> <div>12</div> <div>13</div> <div>14</div> <div>15</div> <div>16</div> <div>17</div> <div>18</div> <div>19</div><div>20</div> <div>21</div> <div>22</div> <div>23</div> <div>24</div> <div>25</div> <div>26</div><div>27</div> <div>28</div> <div>29</div> <div>30</div> <div></div> <div></div> <div></div>
         </div>
-      </div>
     </div>
+  </div>
 
     <div class="column" style="overflow-x:auto;">
       <div class="buildings-table">
-        <h2>Total Building Residence - <?= isset($total_checked_in) ? $total_checked_in : 0; ?></h2>
         <table>
             <tr>
                 <th>Building</th>
@@ -239,13 +270,16 @@ h2 {
               <td>Westminster</td>
               <td><?= isset($building_counts['Westminster']) ? $building_counts['Westminster'] : 0; ?></td>
             </tr>
+            <tr>
+              <td>Total Checked Initialize</td>
+              <td><?= isset($total_checked_in) ? $total_checked_in : 0; ?></td>
+            </tr>
         </table>
       </div>
     </div>
 
   <div class="column" style="overflow-x:auto;">
     <div class="groups-table">
-    <h2>Total Residence Per Group</h2>
         <table>
           <tr>
             <th>Groups</th>

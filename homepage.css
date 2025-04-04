@@ -1,7 +1,7 @@
 body {
-  background: url(src/red-main.jpg) no-repeat fixed;
+  background: url(src/red-white.svg) no-repeat fixed;
   background-size: cover;
-  background-color: #ffffff;
+  background-color: #ff9797;
 }
 
 .header{
