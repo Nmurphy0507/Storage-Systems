@@ -93,7 +93,7 @@ function highlight_search_result($text, $search) {
 <div class="topnavbar">
     <ul>
         <li><a href="home.php" class="btn btn-dark mx-2 mt-2 mb-2">Home</a></li>
-        <li class="dropdown mb-2"><a href="homepage.php" class="dropbtn btn btn-dark mx-2 mt-2 mb-2">Residence</a></li>
+        <li><a href="homepage.php" class="dropbtn btn btn-dark mx-2 mt-2 mb-2">Residence</a></li>
         <li><a href="linen.php" class="dropbtn btn btn-dark mx-2 mt-2 mb-2">Linen Rentals</a></li>
         <li><a href="fan.php" class="btn btn-dark mx-2 mt-2 mb-2">Fan Rentals</a></li>
         <li><a href="Archives.php" class="btn btn-dark mx-2 mt-2 mb-2">Archives</a></li>

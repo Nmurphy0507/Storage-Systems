@@ -72,21 +72,18 @@ while ($row_groups = mysqli_fetch_assoc($result_groups)) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 <style>
-/* Create three equal columns that floats next to each other */
 .column {
   float: left;
   width: 33.33%;
   padding: 15px;
 }
 
-/* Clear floats after the columns */
 .row::after {
   content: "";
   display: table;
   clear: both;
 }
 
-/* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
 @media screen and (max-width:600px) {
   .column {
     width: 100%;
@@ -119,58 +116,6 @@ h2 {
   text-align: center;
   color: black;
 }
-
-.calender-buttons {
-  text-align: center;
-  padding: auto;
-  margin: auto;
-}
-
-.calendar {
-    width: 500px;
-    padding-left: 15px;
-    margin: auto;
-}
-
-.calendar-header {
-    text-align: center;
-    background-color: #212529;
-    color: white;
-    padding: 10px;
-    font-size: 1.2em;
-    font-weight: bold;
-}
-
-.calendar-days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    background-color:rgb(188, 0, 0);
-    color: white;
-}
-
-.calendar-days div {
-    padding: 10px;
-    text-align: center;
-    font-weight: bold;
-}
-
-.calendar-dates {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    background-color: white;
-}
-
-.calendar-dates div {
-    padding: 20px;
-    text-align: center;
-    border: 1px solid #ddd;
-}
-
-.today {
-    background-color: #ffdd57;
-    font-weight: bold;
-}
-
 </style>
 </head>
 
