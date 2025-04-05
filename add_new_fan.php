@@ -173,7 +173,7 @@ if (isset($_POST['submit'])) {
             alert("Please fill in Firstname, Lastname, Building, Room # before submitting");
             return false;
         }
-        return true;
+    return true;
     }
     </script>
 </body>
