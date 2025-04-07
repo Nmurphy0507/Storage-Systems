@@ -211,7 +211,7 @@ h2 {
               <td><?= isset($building_counts['Westminster']) ? $building_counts['Westminster'] : 0; ?></td>
             </tr>
             <tr>
-              <td>Total Checked Initialize</td>
+              <td>Total Checked</td>
               <td><?= isset($total_checked_in) ? $total_checked_in : 0; ?></td>
             </tr>
         </table>
