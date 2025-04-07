@@ -82,11 +82,21 @@ if (isset($_POST['submit'])) {
 </head>
 
 <body>
+
 <div class="header">
-    <img alt="Frostburg State University" style="transform: translate(20px,20px);" src="src/FSU-logo.png">
-    <?php if (isset($user)): ?>
-    <h2 class="p-3 mt-3" style="float:right"> Welcome, <?= htmlspecialchars($user["name"])?> <a href="logout.php" class="dropbtn btn btn-danger"> Logout </a> </h2>
-    <?php endif; ?>
+    <div>
+     <a href="https://www.frostburg.edu/">
+        <img alt="Frostburg State University" style="transform: translate(20px,20px);" src="src/FSU-logo.png">
+        </a>
+        <?php if (isset($user)): ?>
+        <h2 class="mt-2 mx-2" style="float:right"> Welcome, <?= htmlspecialchars($user["name"])?></h2>
+        <?php endif; ?>
+    </div>
+        
+    <div class="logout_button">
+        <a class="dropbtn btn btn-secondary"> <i class="fa-solid fa-user"></i> Account </a>
+        <a href="logout.php" class="dropbtn btn btn-danger"> Logout </a>
+    </div>
 </div>
 
 <div class="container">
@@ -107,7 +117,7 @@ if (isset($_POST['submit'])) {
         <li><a href="home.php" class="btn btn-dark mx-2 mt-2 mb-2">Home</a></li>
         <li><a href="homepage.php" class="dropbtn btn btn-dark mx-2 mt-2 mb-2">Residence</a></li>
         <li><a href="linen.php" class="dropbtn btn btn-dark mx-2 mt-2 mb-2">Linen Rentals</a></li>
-        <li><a href="fan.php" class="dropbtn btn btn-dark mx-2 mt-2 mb-2">Fan Rentals</a></li>
+        <li><a href="fan.php" class="btn btn-dark mx-2 mt-2 mb-2">Fan Rentals</a></li>
         <li><a href="Archives.php" class="btn btn-dark mx-2 mt-2 mb-2">Archives</a></li>
     </ul>
     
@@ -117,17 +127,7 @@ if (isset($_POST['submit'])) {
 </div>
 
 <div class="column middle my-4 mx-5">
-    <div class="card">
-        <div class="card-header"><h4> Import Keys into Database <h4></div>
-        <div class="card-body">
-            <form action="" method="POST" enctype="multipart/form-data">
-                <input type="file" name="import_file" class="form-control" accept=".xlsx">
-                <button class="btn btn-primary mt-3"> Import xlsx file</button>
-            </form>
-        </div>
-    </div>
-
-    <div class="card mt-5">
+<div class="card mt-5">
         <div class="card-header">
             <h4>Fill in the Table and Submit</h4>
         </div>
@@ -210,6 +210,16 @@ if (isset($_POST['submit'])) {
                 <div style="justify: text-center;">
                     <button type="submit" class="btn btn-primary" name="submit">Save All To Database</button>
                 </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mt-2">
+        <div class="card-header"><h4> Import Keys into Database <h4></div>
+        <div class="card-body">
+            <form action="" method="POST" enctype="multipart/form-data">
+                <input type="file" name="import_file" class="form-control" accept=".xlsx">
+                <button class="btn btn-primary mt-3"> Import xlsx file</button>
             </form>
         </div>
     </div>

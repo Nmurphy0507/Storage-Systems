@@ -100,14 +100,16 @@ function highlight_search_result($text, $search) {
         <img alt="Frostburg State University" style="transform: translate(20px,20px);" src="src/FSU-logo.png">
         </a>
         <?php if (isset($user)): ?>
-        <h2 class="mt-2 mx-2" style="float:right"> Welcome, <?= htmlspecialchars($user["name"])?></h2>
+        <h2 class="mt-2 mx-2" style="float:right;"> Welcome, <?= htmlspecialchars($user["name"])?></h2>
         <?php endif; ?>
     </div>
-        
+
     <div class="logout_button">
+        <a class="dropbtn btn btn-secondary"> <i class="fa-solid fa-user"></i> Account </a>
         <a href="logout.php" class="dropbtn btn btn-danger"> Logout </a>
     </div>
 </div>
+
 <div class="topnavbar">
     <ul>
         <li><a href="home.php" class="btn btn-dark mx-2 mt-2 mb-2">Home</a></li>

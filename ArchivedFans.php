@@ -109,6 +109,7 @@ $ArchivedResult = mysqli_query($conn, $archiveQuery);
     </div>
         
     <div class="logout_button">
+        <a class="dropbtn btn btn-secondary"> <i class="fa-solid fa-user"></i> Account </a>
         <a href="logout.php" class="dropbtn btn btn-danger"> Logout </a>
     </div>
 </div>
