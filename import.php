@@ -179,6 +179,17 @@ if (isset($_POST['submit'])) {
 </div>
 
 <div class="column middle my-4 mx-5">
+
+<div class="card mt-2">
+        <div class="card-header"><h4> Import Keys into Database <h4></div>
+        <div class="card-body">
+            <form action="import.php" method="POST" enctype="multipart/form-data">
+                <input type="file" name="import_file" class="form-control" accept=".xlsx, .xls" required>
+                <button type="submit" class="btn btn-primary mt-3">Import Excel File</button>
+            </form>
+        </div>
+    </div>
+
 <div class="card mt-5">
         <div class="card-header">
             <h4>Fill in the Table and Submit</h4>
@@ -262,16 +273,6 @@ if (isset($_POST['submit'])) {
                 <div style="justify: text-center;">
                     <button type="submit" class="btn btn-primary" name="submit">Save All To Database</button>
                 </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="card mt-2">
-        <div class="card-header"><h4> Import Keys into Database <h4></div>
-        <div class="card-body">
-            <form action="import.php" method="POST" enctype="multipart/form-data">
-                <input type="file" name="import_file" class="form-control" accept=".xlsx, .xls" required>
-                <button type="submit" class="btn btn-primary mt-3">Import Excel File</button>
             </form>
         </div>
     </div>
