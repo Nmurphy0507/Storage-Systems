@@ -11,6 +11,58 @@ if (isset($_SESSION["user_id"])) {
 
 include "db_conn.php";
 error_reporting(E_ALL); ini_set('display_errors', 1);
+require 'vendor/autoload.php';
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
+if (isset($_FILES['import_file']['name']) && $_FILES['import_file']['error'] == 0) {
+    $fileName = $_FILES['import_file']['tmp_name'];
+
+    try {
+        // Load the Excel file
+        $spreadsheet = IOFactory::load($fileName);
+        $sheet = $spreadsheet->getActiveSheet();
+        $rows = $sheet->toArray();
+
+        include "db_conn.php"; // Database connection
+
+        // Loop through the rows and insert into the database
+        foreach ($rows as $index => $row) {
+            if ($index == 0) {
+                // Skip the header row
+                continue;
+            }
+
+            $first_name = $row[0];
+            $last_name = $row[1];
+            $building = $row[2];
+            $room = $row[3];
+            $group = $row[4];
+
+            // Ensure required fields are not empty
+            if (empty($first_name) || empty($last_name) || empty($building) || empty($room)) {
+                continue;
+            }
+
+            $sql = "INSERT INTO `checkin-out` (first_name, last_name, building, room, `group`)
+                    VALUES ('$first_name', '$last_name', '$building', '$room', '$group')";
+
+            $result = mysqli_query($conn, $sql);
+
+            if (!$result) {
+                echo "Error: " . mysqli_error($conn);
+                exit(); // Stop execution if there's an error
+            }
+        }
+        
+        header("Location: homepage.php?msg=Data Imported successfully");
+            exit();
+
+    } catch (Exception $e) {
+        echo "Error loading file: " . $e->getMessage();
+    }
+}
 
 if (isset($_POST['submit'])) {
     if (isset($_POST['first_name']) && is_array($_POST['first_name'])) {
@@ -217,9 +269,9 @@ if (isset($_POST['submit'])) {
     <div class="card mt-2">
         <div class="card-header"><h4> Import Keys into Database <h4></div>
         <div class="card-body">
-            <form action="" method="POST" enctype="multipart/form-data">
-                <input type="file" name="import_file" class="form-control" accept=".xlsx">
-                <button class="btn btn-primary mt-3"> Import xlsx file</button>
+            <form action="import.php" method="POST" enctype="multipart/form-data">
+                <input type="file" name="import_file" class="form-control" accept=".xlsx, .xls" required>
+                <button type="submit" class="btn btn-primary mt-3">Import Excel File</button>
             </form>
         </div>
     </div>
