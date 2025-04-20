@@ -19,6 +19,21 @@ $query_total = "SELECT COUNT(*) as total_checked_in
                 WHERE Checked_in_out = 'Checked in'";
 $result_total = mysqli_query($conn, $query_total);
 
+// Query to count the total number of fans checked out based on quantity
+$query_fans = "SELECT SUM(fan_quantity) AS total_fans_out FROM fan WHERE fan_date_returned IS NULL";
+$result_fans = mysqli_query($conn, $query_fans);
+$row_fans = mysqli_fetch_assoc($result_fans);
+$total_fans_out = $row_fans['total_fans_out'] ?? 0;
+
+// Query to count the total number of linens checked out based on quantity
+$query_linens = "SELECT SUM(linen_quantity) AS total_linens_out FROM linens WHERE linen_date_returned IS NULL";
+$result_linens = mysqli_query($conn, $query_linens);
+$row_linens = mysqli_fetch_assoc($result_linens);
+$total_linens_out = $row_linens['total_linens_out'] ?? 0;
+
+$fan_date_rented = isset($total_fans_out) ? $total_fans_out : 0;
+$linens_date_returned = isset($total_linens_out) ? $total_linens_out : 0;
+
 // Fetch the total count
 $row_total = mysqli_fetch_assoc($result_total);
 $total_checked_in = $row_total['total_checked_in'];
@@ -147,28 +162,27 @@ h2 {
 <div class="row">
     <div class="column" style="overflow-x:auto;">
 
+    <table class = "buildings-table" style="margin-bottom: 35px;">
+        <tbody>
+            <tr>
+              <th colspan="2">Items Out</th>
+            <tr>
+              <td>Fans Out</td>
+              <td><?= isset($total_fans_out) ? $total_fans_out : 0; ?></td>
+            </tr>
+            <tr>
+              <td>Linens Out</td>
+              <td><?= isset($total_linens_out) ? $total_linens_out : 0; ?></td>
+            </tr>
+        </tbody>
+    </table>
+
     <div class="quick-add" style="text-align: center; margin-bottom: 20px; margin-left: 10px; background-color: white; padding: 20px; border-radius: 10px;">
       <h2> Quick Add </h2>
       <button class="btn btn-danger" onclick="window.location.href='add_new.php'">Add Residence</button>
       <button class="btn btn-danger" onclick="window.location.href='add_new_linen.php'">Add Linen</button>
       <button class="btn btn-danger" onclick="window.location.href='add_new_fan.php'">Add Fan</button>
       <button class="btn btn-danger" onclick="window.location.href='import.php'">Add Dataset</button>
-    </div>
-
-      <div class="calendar">
-        <div class="calendar-header">April 4</div>
-          <div class="calendar-days">
-              <div>Sun</div>
-              <div>Mon</div>
-              <div>Tue</div>
-              <div>Wed</div>
-              <div>Thu</div>
-              <div>Fri</div>
-              <div>Sat</div>
-          </div>
-          <div class="calendar-dates">
-              <div></div> <div></div> <div>1</div> <div>2</div> <div>3</div> <div>4</div> <div>5</div> <div>6</div> <div>7</div> <div>8</div> <div>9</div> <div class="today">10</div> <div>11</div> <div>12</div> <div>13</div> <div>14 FSY</div> <div>15 FSY</div> <div>16 FSY</div> <div>17 FSY</div> <div>18 FSY</div> <div>19</div><div>20</div> <div>21 FSY</div> <div>22 FSY</div> <div>23 FSY</div> <div>24 FSY</div> <div>25 FSY</div> <div>26</div><div>27</div> <div>28</div> <div>29</div> <div>30</div> <div></div> <div></div> <div></div>
-        </div>
     </div>
   </div>
 
@@ -220,7 +234,7 @@ h2 {
               <td><?= isset($building_counts['Westminster']) ? $building_counts['Westminster'] : 0; ?></td>
             </tr>
             <tr>
-              <td>Total Checked</td>
+              <td>Total </td>
               <td><?= isset($total_checked_in) ? $total_checked_in : 0; ?></td>
             </tr>
         </table>
