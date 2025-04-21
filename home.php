@@ -84,7 +84,8 @@ while ($row_groups = mysqli_fetch_assoc($result_groups)) {
 .column {
   float: left;
   width: 33.33%;
-  padding: 15px;
+  padding: 10px;
+  margin-top: 10px;
 }
 
 .row::after {
@@ -102,13 +103,13 @@ while ($row_groups = mysqli_fetch_assoc($result_groups)) {
 table {
   font-family: arial, sans-serif;
   border-collapse: collapse;
-  width: 90%;
+  width: 95%;
   margin: auto;
 }
 
 td, th {
   border: 1px solid rgb(40, 40, 40);
-  text-align: left;
+  text-align: center;
   padding: 10px;
 }
 
@@ -162,7 +163,7 @@ h2 {
 <div class="row">
     <div class="column" style="overflow-x:auto;">
 
-    <table class = "buildings-table" style="margin-bottom: 35px;">
+    <table class = "buildings-table" style="margin-bottom: 35px; padding-left: 15px;">
         <tbody>
             <tr>
               <th colspan="2">Items Out</th>
@@ -177,7 +178,7 @@ h2 {
         </tbody>
     </table>
 
-    <div class="quick-add" style="text-align: center; margin-bottom: 20px; margin-left: 10px; background-color: white; padding: 20px; border-radius: 10px;">
+    <div class="quick-add" style="text-align: center; margin-bottom: 20px; margin: 15px; background-color: white; padding: 15px;">
       <h2> Quick Add </h2>
       <button class="btn btn-danger" onclick="window.location.href='add_new.php'">Add Residence</button>
       <button class="btn btn-danger" onclick="window.location.href='add_new_linen.php'">Add Linen</button>
