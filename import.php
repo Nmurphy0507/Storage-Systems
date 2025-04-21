@@ -39,14 +39,17 @@ if (isset($_FILES['import_file']['name']) && $_FILES['import_file']['error'] == 
             $building = $row[2];
             $room = $row[3];
             $group = $row[4];
+            $key_number = $row[5];
+            $mealcard = $row[6];
+            $checkin_signature = $row[7];
 
             // Ensure required fields are not empty
             if (empty($first_name) || empty($last_name) || empty($building) || empty($room)) {
                 continue;
             }
 
-            $sql = "INSERT INTO `checkin-out` (first_name, last_name, building, room, `group`)
-                    VALUES ('$first_name', '$last_name', '$building', '$room', '$group')";
+            $sql = "INSERT INTO `checkin-out` (first_name, last_name, building, room, `group`, mealcard, key_number, checkin_signature)
+                    VALUES ('$first_name', '$last_name', '$building', '$room', '$group', '$mealcard', '$key_number', '$checkin_signature')";
 
             $result = mysqli_query($conn, $sql);
 
