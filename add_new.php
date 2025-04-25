@@ -151,7 +151,7 @@
 
                 <div class="row mb-3">
                     <div class="col">
-                        <label class="form-label">Key Checked In or Out:</label><br>
+                        <label class="form-label">Resident Checked In or Out:</label><br>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="radio" name="key_check" id="checked_in" value="Checked In">
                             <label class="form-check-label" for="checked_in">Checked In</label>

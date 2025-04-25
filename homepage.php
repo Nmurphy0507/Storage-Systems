@@ -20,8 +20,9 @@ $group = isset($_GET['group']) ? $_GET['group'] : "";
 
 if (isset($_GET['search'])) {
     $search = mysqli_real_escape_string($conn, $_GET['search']);
-    $sql = "SELECT co.*, l.linen_date_rented FROM `checkin-out` co
+    $sql = "SELECT co.*, l.linen_date_rented, l.linen_date_returned, f.fan_date_rented, f.fan_date_returned FROM `checkin-out` co
             LEFT JOIN `linens` l ON co.id = l.resident_id
+            LEFT JOIN `fan` f ON co.id = f.resident_id
             WHERE (co.first_name LIKE '%$search%' OR
                    co.last_name LIKE '%$search%' OR
                    co.building LIKE '%$search%' OR
@@ -48,7 +49,7 @@ if (isset($_GET['search'])) {
     }
 
 } else {
-    $sql = "SELECT co.*, l.linen_date_rented, f.fan_date_rented FROM `checkin-out` co
+    $sql = "SELECT co.*, l.linen_date_rented, l.linen_date_returned, f.fan_date_rented, f.fan_date_returned FROM `checkin-out` co
             LEFT JOIN `linens` l ON co.id = l.resident_id
             LEFT JOIN `fan` f ON co.id = f.resident_id
             WHERE 1=1";
@@ -279,8 +280,8 @@ function highlight_search_result($text, $search) {
                         </div>
                     </td>
                     <td>
-                        <a href="edit_linen.php?id=<?php echo $row['id']; ?>"><i class="fa-solid fa-bed <?php echo !empty($row['linen_date_rented']) ? 'text-success' : 'link-dark';?>"></i></a>
-                        <a href="edit_fan.php?id=<?php echo $row['id']; ?>"><i class="fa-solid fa-fan <?php echo !empty($row['fan_date_rented']) ? 'text-success' : 'link-dark';?>"></i></a>
+                        <a href="edit_linen.php?id=<?php echo $row['id']; ?>"><i class="fa-solid fa-bed <?php echo (!empty($row['linen_date_rented']) && empty($row['linen_date_returned'])) ? 'text-success' : 'link-dark'; ?>"></i></a>
+                        <a href="edit_fan.php?id=<?php echo $row['id']; ?>"><i class="fa-solid fa-fan <?php echo (!empty($row['fan_date_rented']) && empty($row['fan_date_returned'])) ? 'text-success' : 'link-dark'; ?>"></i></a>
                         <a href="edit.php?id=<?php echo $row['id']; ?>"><i class="fa-solid fa-pen-to-square link-dark mx-1"></i></a>
                     </td>
                 </tr>
