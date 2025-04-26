@@ -1,56 +1,70 @@
 <?php
-    include "db_conn.php";
+include "db_conn.php";
 
-    if (isset($_POST['submit'])) {
-        $id = $_GET['id'];
-        $first_name = mysqli_real_escape_string($conn, $_POST['first_name']);
-        $last_name = mysqli_real_escape_string($conn, $_POST['last_name']);
-        $building = mysqli_real_escape_string($conn, $_POST['building']);
-        $room = mysqli_real_escape_string($conn, $_POST['room']);
-        $key_number = mysqli_real_escape_string($conn, $_POST['key_number']);
-        $group = !empty($_POST['group']) ? mysqli_real_escape_string($conn, $_POST['group']) : null;
-        $mealcard = !empty($_POST['mealcard']) ? mysqli_real_escape_string($conn, $_POST['mealcard']) : null;
-        $checkin_signature = !empty($_POST['checkin_signature']) ? mysqli_real_escape_string($conn, $_POST['checkin_signature']) : null;
-        $key_check = mysqli_real_escape_string($conn, $_POST['key_check']);
-        $key_returned = mysqli_real_escape_string($conn, $_POST['key_returned']);
-        $mealcard_returned = mysqli_real_escape_string($conn, $_POST['mealcard_returned']);
-        $Date = mysqli_real_escape_string($conn, $_POST['Date']);
-        $notes = !empty($_POST['notes']) ? mysqli_real_escape_string($conn, $_POST['notes']) : null;
+if (isset($_POST['submit'])) {
+    $id = $_GET['id'];
+    $first_name = mysqli_real_escape_string($conn, $_POST['first_name']);
+    $last_name = mysqli_real_escape_string($conn, $_POST['last_name']);
+    $building = mysqli_real_escape_string($conn, $_POST['building']);
+    $room = mysqli_real_escape_string($conn, $_POST['room']);
+    $key_number = mysqli_real_escape_string($conn, $_POST['key_number']);
+    $loaner_key = !empty($_POST['loaner_key']) ? mysqli_real_escape_string($conn, $_POST['loaner_key']) : null;
+    $group = !empty($_POST['group']) ? mysqli_real_escape_string($conn, $_POST['group']) : null;
+    $mealcard = !empty($_POST['mealcard']) ? mysqli_real_escape_string($conn, $_POST['mealcard']) : null;
+    $checkin_signature = !empty($_POST['checkin_signature']) ? mysqli_real_escape_string($conn, $_POST['checkin_signature']) : null;
+    $key_check = mysqli_real_escape_string($conn, $_POST['key_check']);
+    
+    // Updated radio button handling
+    $key_returned = (isset($_POST['key_returned']) && $_POST['key_returned'] !== '') ? 
+        mysqli_real_escape_string($conn, $_POST['key_returned']) : null;
+    $mealcard_returned = (isset($_POST['mealcard_returned']) && $_POST['mealcard_returned'] !== '') ? 
+        mysqli_real_escape_string($conn, $_POST['mealcard_returned']) : null;
+    
+    $Date = mysqli_real_escape_string($conn, $_POST['Date']);
+    $notes = !empty($_POST['notes']) ? mysqli_real_escape_string($conn, $_POST['notes']) : null;
 
-        $updateFields = [];
+    $updateFields = [];
 
-        if (!empty($first_name)) $updateFields[] = "`first_name` = '$first_name'";
-        if (!empty($last_name)) $updateFields[] = "`last_name` = '$last_name'";
-        if (!empty($building)) $updateFields[] = "`building` = '$building'";
-        if (!empty($room)) $updateFields[] = "`room` = '$room'";
-        if (!empty($key_number)) $updateFields[] = "`key_number` = '$key_number'";
-        if (!empty($group)) $updateFields[] = "`group` = '$group'";
-        if (!empty($mealcard)) $updateFields[] = "`mealcard` = '$mealcard'";
-        if (!empty($checkin_signature)) $updateFields[] = "`checkin_signature` = '$checkin_signature'";
-        if (!empty($key_check)) $updateFields[] = "`Checked_in_out` = '$key_check'";
-        if (!empty($key_returned)) $updateFields[] = "`key_returned` = '$key_returned'";
-        if (!empty($mealcard_returned)) $updateFields[] = "`mealcard_returned` = '$mealcard_returned'";
-        if (!empty($Date)) $updateFields[] = "`Date` = '$Date'";
-        if (!empty($notes)) $updateFields[] = "`notes` = '$notes'";
+    if (!empty($first_name)) $updateFields[] = "`first_name` = '$first_name'";
+    if (!empty($last_name)) $updateFields[] = "`last_name` = '$last_name'";
+    if (!empty($building)) $updateFields[] = "`building` = '$building'";
+    if (!empty($room)) $updateFields[] = "`room` = '$room'";
+    if (!empty($key_number)) $updateFields[] = "`key_number` = '$key_number'";
+    if (!empty($loaner_key)) $updateFields[] = "`loaner_key` = '$loaner_key'";
+    else $updateFields[] = "`loaner_key` = NULL";
+    if (!empty($group)) $updateFields[] = "`group` = '$group'";
+    if (!empty($mealcard)) $updateFields[] = "`mealcard` = '$mealcard'";
+    if (!empty($checkin_signature)) $updateFields[] = "`checkin_signature` = '$checkin_signature'";
+    if (!empty($key_check)) $updateFields[] = "`Checked_in_out` = '$key_check'";
+    
+    // Updated update conditions for radio buttons
+    if (array_key_exists('key_returned', $_POST)) {
+        $updateFields[] = ($key_returned === null) ? "`key_returned` = NULL" : "`key_returned` = '$key_returned'";
+    }
+    if (array_key_exists('mealcard_returned', $_POST)) {
+        $updateFields[] = ($mealcard_returned === null) ? "`mealcard_returned` = NULL" : "`mealcard_returned` = '$mealcard_returned'";
+    }
+    
+    if (!empty($Date)) $updateFields[] = "`Date` = '$Date'";
+    if (!empty($notes)) $updateFields[] = "`notes` = '$notes'";
 
+    if (count($updateFields) > 0) {
+        $sql = "UPDATE `checkin-out` SET " . implode(", ", $updateFields) . " WHERE `id` = $id";
+        $result = mysqli_query($conn, $sql);
 
-        if (count($updateFields) > 0) {
-            $sql = "UPDATE `checkin-out` SET " . implode(", ", $updateFields) . " WHERE `id` = $id";
-            $result = mysqli_query($conn, $sql);
-
-            if($result) {
-                header("Location: homepage.php?msg=Record updated successfully");
-                exit();
-            } else {
-                echo "Error: " . mysqli_error($conn);
-            }
+        if($result) {
+            header("Location: homepage.php?msg=Record updated successfully");
+            exit();
+        } else {
+            echo "Error: " . mysqli_error($conn);
         }
     }
+}
 
-    $id = $_GET['id'];
-    $sql = "SELECT * FROM `checkin-out` WHERE id = $id LIMIT 1";
-    $result = mysqli_query($conn, $sql);
-    $row = mysqli_fetch_assoc($result);
+$id = $_GET['id'];
+$sql = "SELECT * FROM `checkin-out` WHERE id = $id LIMIT 1";
+$result = mysqli_query($conn, $sql);
+$row = mysqli_fetch_assoc($result);
 ?>
 
 <!DOCTYPE html>
@@ -134,8 +148,15 @@
                     
                 <div class="row mb-3">
                     <div class="col">
-                        <label for="key_number" class="form-label">Key:</label>
-                        <input type="text" id="key_number" class="form-control" name="key_number" value="<?php echo htmlspecialchars($row['key_number']); ?>">
+                        <label for="key_number" class="form-label">Primary Key:</label>
+                        <input type="text" id="key_number" class="form-control" name="key_number" 
+                            value="<?php echo htmlspecialchars($row['key_number']); ?>">
+                    </div>
+
+                    <div class="col">
+                        <label for="loaner_key" class="form-label">Loaner Key:</label>
+                        <input type="text" id="loaner_key" class="form-control" name="loaner_key" 
+                            value="<?php echo htmlspecialchars($row['loaner_key'] ?? ''); ?>">
                     </div>
 
                     <div class="col">
@@ -155,44 +176,36 @@
                     <div class="col">
                         <label class="form-label">Key Checked In or Out:</label><br>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="key_check" id="checked_in" value="Checked In" <?php echo ($row['Checked_in_out'] == 'Checked In') ? "checked" : ""; ?>>
-                            <label class="form-check-label" for="checked_in">Checked In</label>
+                            <input class="form-check-input" type="radio" name="key_check" id="checked_in_edit" value="Checked In" <?php echo ($row['Checked_in_out'] == 'Checked In') ? "checked" : ""; ?>>
+                            <label class="form-check-label" for="checked_in_edit">Checked In</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="key_check" id="checked_out" value="Checked Out" <?php echo ($row['Checked_in_out'] == 'Checked Out') ? "checked" : ""; ?>>
-                            <label class="form-check-label" for="checked_out">Checked Out</label>
+                            <input class="form-check-input" type="radio" name="key_check" id="checked_out_edit" value="Checked Out" <?php echo ($row['Checked_in_out'] == 'Checked Out') ? "checked" : ""; ?>>
+                            <label class="form-check-label" for="checked_out_edit">Checked Out</label>
                         </div>
                     </div>
                     
                     <div class="col">
                         <label class="form-label">Key Returned:</label><br>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="key_returned" id="key_returned" value="Yes" <?php echo ($row['key_returned'] == 'Yes') ? "checked" : ""; ?>>
-                            <label class="form-check-label" for="key_returned">Yes</label>
+                            <input class="form-check-input" type="radio" name="key_returned" id="key_returned_yes_edit" value="Yes" <?php echo ($row['key_returned'] == 'Yes') ? "checked" : ""; ?>>
+                            <label class="form-check-label" for="key_returned_yes_edit">Yes</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="key_returned" id="key_returned" value="No" <?php echo ($row['key_returned'] == 'No') ? "checked" : ""; ?>>
-                            <label class="form-check-label" for="key_returned">No</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="key_returned" id="key_returned" value="Not Issued" <?php echo ($row['key_returned'] == 'Not Issued') ? "checked" : ""; ?>>
-                            <label class="form-check-label" for="key_returned">Not Issued</label>
+                            <input class="form-check-input" type="radio" name="key_returned" id="key_returned_no_edit" value="No" <?php echo ($row['key_returned'] == 'No') ? "checked" : ""; ?>>
+                            <label class="form-check-label" for="key_returned_no_edit">No</label>
                         </div>
                     </div>
 
                     <div class="col">
                         <label class="form-label">Mealcard Returned:</label><br>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="mealcard_returned" id="mealcard_returned" value="Yes" <?php echo ($row['mealcard_returned'] == 'Yes') ? "checked" : ""; ?>>
-                            <label class="form-check-label" for="mealcard_returned">Yes</label>
+                            <input class="form-check-input" type="radio" name="mealcard_returned" id="mealcard_returned_yes_edit" value="Yes" <?php echo ($row['mealcard_returned'] == 'Yes') ? "checked" : ""; ?>>
+                            <label class="form-check-label" for="mealcard_returned_yes_edit">Yes</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="mealcard_returned" id="mealcard_returned" value="No" <?php echo ($row['key_returned'] == 'No') ? "checked" : ""; ?>>
-                            <label class="form-check-label" for="mealcard_returned">No</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="mealcard_returned" id="mealcard_returned" value="Not Issued" <?php echo ($row['key_returned'] == 'Not Issued') ? "checked" : ""; ?>>
-                            <label class="form-check-label" for="mealcard_returned">Not Issued</label>
+                            <input class="form-check-input" type="radio" name="mealcard_returned" id="mealcard_returned_no_edit" value="No" <?php echo ($row['mealcard_returned'] == 'No') ? "checked" : ""; ?>>
+                            <label class="form-check-label" for="mealcard_returned_no_edit">No</label>
                         </div>
                     </div>
                 </div>
@@ -223,58 +236,99 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
     
     <script>
-    function confirmDeletion() {
-        return confirm("Are you sure you want to delete this record?");
-    }
+        // Improved radio button handling
+        document.addEventListener('DOMContentLoaded', function() {
+            // Track radio button states
+            const radioGroups = {
+                'key_returned': null,
+                'mealcard_returned': null
+            };
 
-    function validateForm() {
-        var firstName = document.getElementById("first_name").value.trim();
-        var lastName = document.getElementById("last_name").value.trim();
-        var building = document.getElementById("building").value.trim();
-        var room = document.getElementById("room").value.trim();
+            // Initialize with current selections
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                if (radio.checked) {
+                    radioGroups[radio.name] = radio.value;
+                }
+            });
 
-        if (firstName === "" || lastName === "" || building === "" || room === "") {
-            alert("Please fill in Firstname, Lastname, Building, Room # before submitting");
-            return false;
+            // Handle radio button clicks
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener('click', function() {
+                    const name = this.name;
+                    
+                    // If clicking the already selected radio
+                    if (radioGroups[name] === this.value) {
+                        this.checked = false;
+                        radioGroups[name] = null;
+                    } else {
+                        radioGroups[name] = this.value;
+                    }
+                });
+            });
+
+            // Before form submission
+            document.querySelector('form').addEventListener('submit', function() {
+                // Add hidden fields for deselected radio groups
+                Object.keys(radioGroups).forEach(name => {
+                    if (radioGroups[name] === null) {
+                        const hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = name;
+                        hiddenInput.value = '';
+                        this.appendChild(hiddenInput);
+                    }
+                });
+                
+                // Handle signature pad
+                if (!signaturePad.isEmpty()) {
+                    var signatureData = signaturePad.toDataURL();
+                    document.getElementById('checkin_signature').value = signatureData;
+                }
+            });
+        });
+
+        // Signature Pad initialization
+        var canvas = document.getElementById('signature-pad');
+        var signaturePad = new SignaturePad(canvas, {
+            backgroundColor: 'rgb(255, 255, 255)'
+        });
+
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+
+        var existingSignature = document.getElementById('checkin_signature').value;
+        if (existingSignature) {
+            var img = new Image();
+            img.src = existingSignature;
+            img.onload = function() {
+                signaturePad.clear();
+                var ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            };
         }
-        return true;
-    }
 
-    var canvas = document.getElementById('signature-pad');
-    var signaturePad = new SignaturePad(canvas, {
-        backgroundColor: 'rgb(255, 255, 255)' // Set background color to white
-    });
-
-    // Set canvas dimensions explicitly
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-
-    var existingSignature = document.getElementById('checkin_signature').value;
-    if (existingSignature) {
-        var img = new Image();
-        img.src = existingSignature;
-        img.onload = function () {
-            // Clear the canvas before redrawing
+        document.getElementById('clear-signature').addEventListener('click', function() {
             signaturePad.clear();
-            
-            // Draw the existing signature with the correct dimensions
-            var ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        };
-    }
+            document.getElementById('checkin_signature').value = '';
+        });
 
-    document.getElementById('clear-signature').addEventListener('click', function () {
-        signaturePad.clear();
-        document.getElementById('checkin_signature').value = '';
-    });
-
-    document.querySelector('form').addEventListener('submit', function (event) {
-        if (!signaturePad.isEmpty()) {
-            var signatureData = signaturePad.toDataURL();
-            document.getElementById('checkin_signature').value = signatureData;
+        function confirmDeletion() {
+            return confirm("Are you sure you want to delete this record?");
         }
-    });
-</script>
+
+        function validateForm() {
+            var firstName = document.getElementById("first_name").value.trim();
+            var lastName = document.getElementById("last_name").value.trim();
+            var building = document.getElementById("building").value.trim();
+            var room = document.getElementById("room").value.trim();
+
+            if (firstName === "" || lastName === "" || building === "" || room === "") {
+                alert("Please fill in Firstname, Lastname, Building, Room # before submitting");
+                return false;
+            }
+            return true;
+        }
+    </script>
     
 </body>
 </html>

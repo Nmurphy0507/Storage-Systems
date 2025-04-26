@@ -1,51 +1,53 @@
 <?php
-    include "db_conn.php";
-    error_reporting(E_ALL); ini_set('display_errors', 1);
+include "db_conn.php";
+error_reporting(E_ALL); ini_set('display_errors', 1);
 
-    if(isset($_POST['submit'])) {
-        $first_name = $_POST['first_name'];
-        $last_name = $_POST['last_name'];
-        $building = $_POST['building'];
-        $room = $_POST['room'];
-    
-        $key_number = isset($_POST['key_number']) ? $_POST['key_number'] : null;
-        $group = isset($_POST['group']) ? $_POST['group'] : null;
-        $mealcard = isset($_POST['mealcard']) ? $_POST['mealcard'] : null;
-        $checkin_signature = isset($_POST['checkin_signature']) ? $_POST['checkin_signature'] : null;
-        $key_check = isset($_POST['key_check']) ? $_POST['key_check'] : null;
-        $key_returned = isset($_POST['key_returned']) ? $_POST['key_returned'] : null;
-        $mealcard_returned = isset($_POST['mealcard_returned']) ? $_POST['mealcard_returned'] : null;
-        $Date = isset($_POST['Date']) ? $_POST['Date'] : null;
-        $notes = isset($_POST['notes']) ? $_POST['notes'] : null;
+if(isset($_POST['submit'])) {
+    $first_name = mysqli_real_escape_string($conn, $_POST['first_name']);
+    $last_name = mysqli_real_escape_string($conn, $_POST['last_name']);
+    $building = mysqli_real_escape_string($conn, $_POST['building']);
+    $room = mysqli_real_escape_string($conn, $_POST['room']);
 
-        $Checked_in_out = isset($_POST['key_check']) ? $_POST['key_check'] : null;
+    $key_number = isset($_POST['key_number']) ? mysqli_real_escape_string($conn, $_POST['key_number']) : null;
+    $loaner_key = isset($_POST['loaner_key']) ? mysqli_real_escape_string($conn, $_POST['loaner_key']) : null;
+    $group = isset($_POST['group']) ? mysqli_real_escape_string($conn, $_POST['group']) : null;
+    $mealcard = isset($_POST['mealcard']) ? mysqli_real_escape_string($conn, $_POST['mealcard']) : null;
+    $checkin_signature = isset($_POST['checkin_signature']) ? mysqli_real_escape_string($conn, $_POST['checkin_signature']) : null;
+    $key_check = isset($_POST['key_check']) ? mysqli_real_escape_string($conn, $_POST['key_check']) : null;
+    $key_returned = isset($_POST['key_returned']) ? mysqli_real_escape_string($conn, $_POST['key_returned']) : null;
+    $mealcard_returned = isset($_POST['mealcard_returned']) ? mysqli_real_escape_string($conn, $_POST['mealcard_returned']) : null;
+    $Date = isset($_POST['Date']) ? mysqli_real_escape_string($conn, $_POST['Date']) : null;
+    $notes = isset($_POST['notes']) ? mysqli_real_escape_string($conn, $_POST['notes']) : null;
 
-        if(empty($first_name) || empty($last_name) || empty($building) || empty($room)) {
-            echo "<script>alert('Please fill in Firstname, Lastname, Building, Room # before submitting')</script>";
-        }
-    
-        // Insert query with optional fields
-        $sql = "INSERT INTO `checkin-out` (first_name, last_name, building, room, `group`, mealcard, key_number, checkin_signature, Checked_in_out, key_returned, mealcard_returned, Date, notes)
-                VALUES ('$first_name', '$last_name', '$building', '$room', 
-                        ". ($group ? "'$group'" : "NULL") .", 
-                        ". ($mealcard ? "'$mealcard'" : "NULL") .", 
-                        ". ($key_number ? "'$key_number'" : "NULL") .", 
-                        ". ($checkin_signature ? "'$checkin_signature'" : "NULL") .",
-                        '$Checked_in_out',
-                        ". ($key_returned ? "'$key_returned'" : "NULL") .",
-                        ". ($mealcard_returned ? "'$mealcard_returned'" : "NULL") .",
-                        ". ($Date ? "'$Date'" : "NULL") .",
-                        ". ($notes ? "'$notes'" : "NULL") .")";
+    $Checked_in_out = $key_check; // Use the already escaped value
 
-        $result = mysqli_query($conn, $sql);
-    
-        if($result) {
-            header("Location: homepage.php?msg=New record created successfully");
-            exit();
-        } else {
-            echo "Error: " . mysqli_error($conn);
-        }
+    if(empty($first_name) || empty($last_name) || empty($building) || empty($room)) {
+        echo "<script>alert('Please fill in Firstname, Lastname, Building, Room # before submitting')</script>";
     }
+
+    // Insert query with optional fields
+    $sql = "INSERT INTO `checkin-out` (first_name, last_name, building, room, `group`, mealcard, key_number, loaner_key, checkin_signature, Checked_in_out, key_returned, mealcard_returned, Date, notes)
+            VALUES ('$first_name', '$last_name', '$building', '$room', 
+                    ". ($group ? "'$group'" : "NULL") .", 
+                    ". ($mealcard ? "'$mealcard'" : "NULL") .", 
+                    ". ($key_number ? "'$key_number'" : "NULL") .", 
+                    ". ($loaner_key ? "'$loaner_key'" : "NULL") .", 
+                    ". ($checkin_signature ? "'$checkin_signature'" : "NULL") .",
+                    '$Checked_in_out',
+                    ". ($key_returned ? "'$key_returned'" : "NULL") .",
+                    ". ($mealcard_returned ? "'$mealcard_returned'" : "NULL") .",
+                    ". ($Date ? "'$Date'" : "NULL") .",
+                    ". ($notes ? "'$notes'" : "NULL") .")";
+
+    $result = mysqli_query($conn, $sql);
+
+    if($result) {
+        header("Location: homepage.php?msg=New record created successfully");
+        exit();
+    } else {
+        echo "Error: " . mysqli_error($conn);
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -132,8 +134,13 @@
                    
                 <div class="row mb-3">
                     <div class="col">
-                        <label for="key_number" class="form-label">Key:</label>
+                        <label for="key_number" class="form-label">Primary Key:</label>
                         <input type="text" id="key_number" class="form-control" name="key_number" placeholder="Key #">
+                    </div>
+                    
+                    <div class="col">
+                        <label for="loaner_key" class="form-label">Loaner Key:</label>
+                        <input type="text" id="loaner_key" class="form-control" name="loaner_key" placeholder="Loaner Key # (if applicable)">
                     </div>
 
                     <div class="col">
@@ -141,7 +148,7 @@
                         <input type="text" id="mealcard" class="form-control" name="mealcard" placeholder="Mealcard #">
                     </div>
                 </div>
-
+                
                 <div class="mb-3">
                     <label for="checkin_signature" class="form-label">Signature:</label>
                     <canvas id="signature-pad" class="signature-pad" style="border: 1px solid #000; width: 100%; height: 150px;"></canvas>
@@ -149,7 +156,7 @@
                     <button type="button" id="clear-signature" class="btn btn-secondary mt-2">Clear Signature</button>
                 </div>
 
-                <div class="row mb-3">
+                <div class="row mb-3" style="text-align: center;">
                     <div class="col">
                         <label class="form-label">Resident Checked In or Out:</label><br>
                         <div class="form-check form-check-inline">
@@ -172,10 +179,6 @@
                             <input class="form-check-input" type="radio" name="key_returned" id="key_returned_no" value="No">
                             <label class="form-check-label" for="key_returned_no">No</label>
                         </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="key_returned" id="key_returned_not_issued" value="Not Issued">
-                            <label class="form-check-label" for="key_returned_not_issued">Not Issued</label>
-                        </div>
                     </div>
 
                     <div class="col">
@@ -188,12 +191,25 @@
                             <input class="form-check-input" type="radio" name="mealcard_returned" id="mealcard_returned_no" value="No">
                             <label class="form-check-label" for="mealcard_returned_no">No</label>
                         </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="mealcard_returned" id="mealcard_returned_not_issued" value="Not Issued">
-                            <label class="form-check-label" for="mealcard_returned_not_issued">Not Issued</label>
-                        </div>
                     </div>
                 </div>
+
+                <script>
+                    const lastSelected = {};
+
+                    document.querySelectorAll('input[type="radio"]').forEach((radio) => {
+                        radio.addEventListener('click', function() {
+                            const name = this.name;
+                            if (lastSelected[name] === this) {
+                                this.checked = false;
+                                lastSelected[name] = null;
+                            } else {
+                                lastSelected[name] = this;
+                            }
+                        });
+                    });
+                </script>
+
 
                 <div class="form-container mb-3">
                     <label for="Date" class="form-label">Date:</label>

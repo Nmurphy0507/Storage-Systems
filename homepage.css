@@ -172,7 +172,7 @@ header, .logout_button {
   margin-right: 25px;
 }
 
-topnavbar, .input-group {
+.input-group {
   display: flex;
   justify-content: center;
   padding: 8px;
@@ -192,57 +192,24 @@ topnavbar, .input-group {
 
 .footer {
   text-align: center;
-  padding: 75px;
+  padding: 30px;
 }
 
-.calender-buttons {
-  text-align: center;
-  padding: auto;
-  margin: auto;
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+  .header, .topnavbar, .footer {
+    text-align: center;
+  }
+  .right-button {
+    float: none;
+    margin: 0 auto;
+  }
+  .right_buttons {
+    float: none;
+    display: block;
+    margin: 0 auto;
+  }
 }
 
-.calendar {
-  width: 500px;
-  padding-left: 15px;
-  margin: auto;
-}
 
-.calendar-header {
-  text-align: center;
-  background-color:rgb(40, 40, 40);
-  color: white;
-  padding: 10px;
-  font-size: 1.2em;
-  font-weight: bold;
-}
-
-.calendar-days {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  background-color:rgb(255, 255, 255);
-  color: black;
-}
-
-.calendar-days div {
-  padding: 10px;
-  text-align: center;
-  font-weight: bold;
-}
-
-.calendar-dates {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  background-color: white;
-}
-
-.calendar-dates div {
-  padding: 20px;
-  text-align: center;
-  border: 1px solid #ddd;
-}
-
-.today {
-  background-color:rgb(255, 192, 192);
-  font-weight: bold;
-} 
 

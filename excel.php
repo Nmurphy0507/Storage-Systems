@@ -21,6 +21,7 @@ if (isset($_POST["export_excel"])) {
                 <th>Building</th>
                 <th>Room / Bed</th>
                 <th>Key</th>
+                <th>Loaner Key</th>
                 <th>Mealcard</th>
                 <th>Checked In or Out</th>
                 <th>Key Returned</th>
@@ -40,6 +41,7 @@ if (isset($_POST["export_excel"])) {
                 <td>' . $row["building"] . '</td>
                 <td>' . $row["room"] . '</td>
                 <td>' . $row["key_number"] . '</td>
+                <td>' . $row["loaner_key"] . '</td>
                 <td>' . $row["mealcard"] . '</td>
                 <td>' . $row["Checked_in_out"] . '</td>
                 <td>' . $row["key_returned"] . '</td>

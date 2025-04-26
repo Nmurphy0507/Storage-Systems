@@ -30,6 +30,7 @@ if (mysqli_num_rows($result) > 0) {
         $building = mysqli_real_escape_string($conn, $row['building']);
         $room = mysqli_real_escape_string($conn, $row['room']);
         $key_number = mysqli_real_escape_string($conn, $row['key_number']);
+        $loaner_key = mysqli_real_escape_string($conn, $row['loaner_key']);
         $group = mysqli_real_escape_string($conn, $row['group']);
         $mealcard = mysqli_real_escape_string($conn, $row['mealcard']);
         $checkin_signature = mysqli_real_escape_string($conn, $row['checkin_signature']);
@@ -40,8 +41,8 @@ if (mysqli_num_rows($result) > 0) {
         $notes = mysqli_real_escape_string($conn, $row['notes']);
         
         // Insert into ArchivedKeys table
-        $archiveSql = "INSERT INTO ArchivedKeys (`first_name`, `last_name`, `building`, `room`, `key_number`, `group`, `mealcard`, `checkin_signature`, `Checked_in_out`, `key_returned`, `mealcard_returned`, `Date`, `notes`)
-                        VALUES ('$first_name', '$last_name', '$building', '$room', '$key_number', '$group', '$mealcard', '$checkin_signature', '$checked_in_out', '$key_returned', '$mealcard_returned', '$date', '$notes')";
+        $archiveSql = "INSERT INTO ArchivedKeys (`first_name`, `last_name`, `building`, `room`, `key_number`, `loaner_key`, `group`, `mealcard`, `checkin_signature`, `Checked_in_out`, `key_returned`, `mealcard_returned`, `Date`, `notes`)
+                        VALUES ('$first_name', '$last_name', '$building', '$room', '$key_number', '$loaner_key', '$group', '$mealcard', '$checkin_signature', '$checked_in_out', '$key_returned', '$mealcard_returned', '$date', '$notes')";
         
         
         // Run the insert query

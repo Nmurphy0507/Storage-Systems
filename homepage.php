@@ -280,6 +280,7 @@ function highlight_search_result($text, $search) {
                         </div>
                     </td>
                     <td>
+                        <a href="edit.php?id=<?php echo $row['id']; ?>"><i class="fa-solid fa-key <?php echo (!empty($row['loaner_key'])) ? 'text-success' : 'link-dark'; ?>"></i></a>
                         <a href="edit_linen.php?id=<?php echo $row['id']; ?>"><i class="fa-solid fa-bed <?php echo (!empty($row['linen_date_rented']) && empty($row['linen_date_returned'])) ? 'text-success' : 'link-dark'; ?>"></i></a>
                         <a href="edit_fan.php?id=<?php echo $row['id']; ?>"><i class="fa-solid fa-fan <?php echo (!empty($row['fan_date_rented']) && empty($row['fan_date_returned'])) ? 'text-success' : 'link-dark'; ?>"></i></a>
                         <a href="edit.php?id=<?php echo $row['id']; ?>"><i class="fa-solid fa-pen-to-square link-dark mx-1"></i></a>
