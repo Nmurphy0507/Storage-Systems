@@ -38,6 +38,8 @@ if (isset($_GET['search'])) {
         $sql .= " AND co.Checked_in_out = 'Checked In'";
     } elseif ($filter === 'checkedout') {
         $sql .= " AND co.Checked_in_out = 'Checked Out'";
+    } elseif ($filter === 'loaner_key') {
+        $sql .= " AND co.loaner_key IS NOT NULL AND co.loaner_key != ''";
     }
 
     if (!empty($building)) {
@@ -58,6 +60,8 @@ if (isset($_GET['search'])) {
         $sql .= " AND co.Checked_in_out = 'Checked In'";
     } elseif ($filter === 'checkedout') {
         $sql .= " AND co.Checked_in_out = 'Checked Out'";
+    } elseif ($filter === 'loaner_key') {
+        $sql .= " AND co.loaner_key IS NOT NULL AND co.loaner_key != ''";
     }
 
     if (!empty($building)) {
@@ -120,6 +124,7 @@ function highlight_search_result($text, $search) {
                 <a href="homepage.php">All Residence</a>
                 <a href="homepage.php?filter=checkedin">Checked In</a>
                 <a href="homepage.php?filter=checkedout">Checked Out</a>
+                <a href="homepage.php?filter=loaner_key">Loaner Keys Out</a>
             </div>
         </li>
         <li class="dropdown">
