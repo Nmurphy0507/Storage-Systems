@@ -77,6 +77,7 @@ if (isset($_POST['submit'])) {
 
             // Optional fields
             $key_number = isset($_POST['key_number'][$index]) ? $_POST['key_number'][$index] : null;
+            $loaner_key = isset($_POST['loaner_key'][$index]) ? $_POST['loaner_key'][$index] : null;
             $group = isset($_POST['group'][$index]) ? $_POST['group'][$index] : null;
             $mealcard = isset($_POST['mealcard'][$index]) ? $_POST['mealcard'][$index] : null;
             $checkin_signature = isset($_POST['checkin_signature'][$index]) ? $_POST['checkin_signature'][$index] : null;
@@ -101,6 +102,7 @@ if (isset($_POST['submit'])) {
                             " . ($group ? "'$group'" : "NULL") . ",
                             " . ($mealcard ? "'$mealcard'" : "NULL") . ",
                             " . ($key_number ? "'$key_number'" : "NULL") . ",
+                            " . ($loaner_key ? "'$loaner_key'" : "NULL") . ",
                             " . ($checkin_signature ? "'$checkin_signature'" : "NULL") . ",
                             '$Checked_in_out',
                             " . ($key_returned ? "'$key_returned'" : "NULL") . ",
