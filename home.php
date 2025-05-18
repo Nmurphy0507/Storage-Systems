@@ -126,6 +126,46 @@ h2 {
   text-align: center;
   color: black;
 }
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    width: 50%;
+    text-align: left;
+    font-size: larger;
+  }
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+}
 </style>
 </head>
 
@@ -137,11 +177,48 @@ h2 {
         </a>
         <?php if (isset($user)): ?>
         <h2 class="mt-2 mx-2" style="float:right"> Welcome, <?= htmlspecialchars($user["name"])?></h2>
+        <?php else: ?>
+        <h2 class="mt-2 mx-2" style="float:right"> Welcome, Guest </h2>
         <?php endif; ?>
     </div>
         
     <div class="logout_button">
-        <a class="dropbtn btn btn-secondary"> <i class="fa-solid fa-user"></i> Account </a>
+      <a href="#" class="dropbtn btn btn-secondary" id="accountButton"><i class="fa-solid fa-user"></i> Account</a>
+        <div id="accountModal" class="modal">
+            <div class="modal-content">
+              <span class="close">&times;</span>
+              <h2 style="text-align: left; padding-bottom: 15px;">Account Details</h2>
+              <form id="accountUpdateForm" action="update_account.php" method="POST">
+                <div style="margin-bottom: 15px;">
+                <label for="username" style="font-weight: bold; padding-bottom: 2px;">Username</label>
+                <input type="text" id="username" name="username" value="<?= htmlspecialchars($user["name"]) ?>" class="form-control">
+                </div>
+                <div style="margin-bottom: 15px;">
+                  <label for="email" style="font-weight: bold; padding-bottom: 2px;">Email</label>
+                  <input type="email" id="email" name="email" value="<?= htmlspecialchars($user["email"]) ?>" class="form-control">
+                </div>
+                <div style="margin-bottom: 15px;">
+                  <label for="currentPassword" style="padding-bottom: 2px;"><b>Current Password</b></label>
+                  <input type="password" id="currentPassword" name="currentPassword" class="form-control" placeholder="Current password">
+                </div>
+                <div style="margin-bottom: 15px;">
+                  <label for="newPassword" style="padding-bottom: 2px;"><b>New Password</b></label>
+                  <input type="password" id="newPassword" name="newPassword" class="form-control" placeholder="New password (Must contain a letter, a number, and be at least 8 characters)">
+                </div>
+                <div style="margin-bottom: 15px;">
+                  <label for="confirmPassword" style="padding-bottom: 2px;"><b>Confirm New Password</b></label>
+                  <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Confirm new password">
+                </div>
+                <p style="text-align: right; padding-top: 15px;">
+                  <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'admin'): ?>
+                    <a href="admin_features.php" class="btn btn-warning">Admin Page</a>
+                  <?php endif; ?>
+                  <button type="submit" class="btn btn-success">Update</button>
+                  <a href="home.php" class="btn btn-danger">Cancel</a>
+                </p>
+              </form>
+            </div>
+        </div>
         <a href="logout.php" class="dropbtn btn btn-danger"> Logout </a>
     </div>
 </div>
@@ -152,13 +229,37 @@ h2 {
         <li><a href="homepage.php" class="dropbtn btn btn-dark mx-2 mt-2 mb-2">Residence</a></li>
         <li><a href="linen.php" class="dropbtn btn btn-dark mx-2 mt-2 mb-2">Linen Rentals</a></li>
         <li><a href="fan.php" class="btn btn-dark mx-2 mt-2 mb-2">Fan Rentals</a></li>
+        <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'admin'): ?>
         <li><a href="Archives.php" class="btn btn-dark mx-2 mt-2 mb-2">Archives</a></li>
+        <?php endif; ?>
     </ul>
     
     <form class="" method="get">
       <div class="input-group"></div>
     </form>
 </div>
+
+<div class="container mt-3" style="
+    position: fixed;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    max-width: 90%;
+    z-index: 1050; /* higher than most elements */
+">
+  <?php
+  if (isset($_GET['msg'])) {
+      $msg = htmlspecialchars($_GET['msg'], ENT_QUOTES, 'UTF-8');
+      echo '
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+          ' . $msg . '
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>';
+  }
+  ?>
+</div>
+
 
 <div class="row">
     <div class="column" style="overflow-x:auto;">
@@ -183,7 +284,9 @@ h2 {
       <button class="btn btn-danger" onclick="window.location.href='add_new.php'">Add Residence</button>
       <button class="btn btn-danger" onclick="window.location.href='add_new_linen.php'">Add Linen</button>
       <button class="btn btn-danger" onclick="window.location.href='add_new_fan.php'">Add Fan</button>
+      <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'admin'): ?>
       <button class="btn btn-danger" onclick="window.location.href='import.php'">Add Dataset</button>
+      <?php endif; ?>
     </div>
   </div>
 
@@ -291,7 +394,7 @@ h2 {
           </tr>
           <tr>
             <td>Wooten Session 2</td>
-            <td><?= isset($group_counts['Wooten Session 12']) ? $group_counts['Wooten Session 2'] : 0; ?></td>
+            <td><?= isset($group_counts['Wooten Session 2']) ? $group_counts['Wooten Session 2'] : 0; ?></td>
           </tr>
           <tr>
             <td>Wooten Session 3</td>
@@ -315,8 +418,23 @@ h2 {
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybU5p2Uj1d1iz1pSA9Wdnlrp9bJhFsD7/TfZp7xYfuN0KSf4I" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+    <script>
+      document.getElementById('accountButton').addEventListener('click', function (e) {
+          e.preventDefault();
+          document.getElementById('accountModal').style.display = 'block';
+      });
 
-    <script src=""></script>
+      document.querySelector('.close').addEventListener('click', function () {
+          document.getElementById('accountModal').style.display = 'none';
+      });
+
+      window.addEventListener('click', function (event) {
+          const modal = document.getElementById('accountModal');
+          if (event.target === modal) {
+              modal.style.display = 'none';
+          }
+      });
+    </script>
 
     <div class="footer">
         <p>Website Created by - Nathan Murphy <i class="fa fa-phone" style="font-size:12px"> 240-457-3326 </i> <i class="fa fa-envelope" style="font-size:12px"></i> Nathanmurphy0507@gmail.com </p>

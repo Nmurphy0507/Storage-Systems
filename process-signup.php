@@ -34,8 +34,8 @@ if (!empty($errors)) {
 
     $mysqli = require __DIR__ . "/database.php";
 
-    $sql = "INSERT INTO user (name, Email, password_hash)
-            VALUES (?,?,?)";
+    $sql = "INSERT INTO user (name, Email, password_hash, user_type)
+            VALUES (?,?,?,?)";
 
     $stmt = $mysqli->stmt_init();
 
@@ -43,10 +43,14 @@ if (!empty($errors)) {
         die("SQL error: " . $mysqli->error);
     }
 
-    $stmt->bind_param("sss",
-                      $_POST["Username"],
+    // Set user_type to 'user' by default
+    $user_type = 'user';
+
+    $stmt->bind_param("ssss",
+                      $_POST["username"],
                       $_POST["Email"],
-                      $password_hash);
+                      $password_hash,
+                      $user_type);
 
     if ($stmt->execute()) {
         $data['success'] = true;

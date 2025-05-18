@@ -1,5 +1,7 @@
 <?php
+session_start();
 include "db_conn.php";
+
 
 if (isset($_POST['submit'])) {
     $id = $_GET['id'];
@@ -226,7 +228,9 @@ $row = mysqli_fetch_assoc($result);
                 </div>
 
                 <div class="delete-button-container">
+                <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'admin'): ?>
                     <a href="delete.php?id=<?php echo $row['id']; ?>" class="btn btn-danger" onclick="return confirmDeletion();">Delete Resident</a>
+                <?php endif; ?>
                 </div>
                 
                 </form>

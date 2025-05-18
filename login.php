@@ -27,6 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 session_regenerate_id();
 
                 $_SESSION["user_id"] = $user["id"];
+                $_SESSION["user_type"] = $user["user_type"];
 
                 header("Location: home.php");
                 exit;
@@ -44,8 +45,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <meta charset="utf-8">
     <title>Login</title>
     <link rel="shortcut icon" href="/assets/favicon.ico">
-    <link rel="preconnect" href="https://fonts.googleapis.com"> 
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./src/main.css">
 </head>
@@ -69,9 +70,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 <div class="form__input-error-message"></div>
             </div>
             <button class="form__button" type="submit">Login</button>
-            <p class="form__text">
-                <a class="form__link" href="index.html" id="createAccount">Don't have an account? Create Account</a>
-            </p>
         </form>
     </div>
 

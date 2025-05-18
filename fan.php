@@ -97,7 +97,9 @@ function highlight_search_result($text, $search) {
         <li><a href="homepage.php" class="dropbtn btn btn-dark mx-2 mt-2 mb-2">Residence</a></li>
         <li><a href="linen.php" class="dropbtn btn btn-dark mx-2 mt-2 mb-2">Linen Rentals</a></li>
         <li><a href="fan.php" class="btn btn-dark mx-2 mt-2 mb-2">Fan Rentals</a></li>
-        <li><a href="Archives.php" class="btn btn-dark mx-2 mt-2 mb-2">Archives</a></li>
+        <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'admin'): ?>
+            <li><a href="Archives.php" class="btn btn-dark mx-2 mt-2 mb-2">Archives</a></li>
+        <?php endif; ?>
 
         <div class="right_buttons">
             <li><a href="add_new_fan.php" class="btn btn-secondary my-2"> Add New </a></li>
@@ -171,7 +173,9 @@ function highlight_search_result($text, $search) {
 
         <?php if (empty($filter) && empty($building) && empty($group)): ?>
         <form method="post" action="excel_fan.php">
+            <?php if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'admin'): ?>
             <input type="submit" name="export_excel" style="float:right" class="btn btn-success " value="Export to Excel">
+            <?php endif; ?>
         </form>
         <?php endif ?>
 
